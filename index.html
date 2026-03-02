@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>💖 Countdown to You</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💖</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --pink: #ff2d75; --violet: #7b2dff; --cyan: #00f0ff;
+      --bg: #0a0a1a; --card: rgba(255,255,255,.04); --line: rgba(255,255,255,.12);
+      --txt: #fff; --muted: rgba(255,255,255,.65);
+    }
+    body { min-height: 100vh; overflow-x: hidden; color: var(--txt); background: var(--bg); font-family: Poppins, sans-serif; }
+    .aurora { position: fixed; inset: -50%; z-index: 0; pointer-events: none; opacity: .8;
+      background: conic-gradient(from 0deg, transparent, rgba(255,45,117,.06), transparent, rgba(123,45,255,.06), transparent, rgba(0,240,255,.06), transparent);
+      animation: spin 28s linear infinite; }
+    .bg { position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background: radial-gradient(circle at 20% 20%, rgba(255,45,117,.12), transparent 40%),
+                  radial-gradient(circle at 80% 15%, rgba(123,45,255,.12), transparent 40%),
+                  radial-gradient(circle at 50% 85%, rgba(0,240,255,.10), transparent 40%); }
+    #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+    .app { position: relative; z-index: 2; min-height: 100vh; display: grid; place-items: center; padding: 20px; }
+    .wrap { width: min(980px, 100%); display: grid; gap: 18px; }
+    .header { text-align: center; }
+    .badge { display: inline-flex; gap: 8px; align-items: center; padding: 8px 18px; border: 1px solid var(--line); border-radius: 99px; background: var(--card); color: var(--muted); font-size: 12px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #00ff88; box-shadow: 0 0 12px #00ff88; animation: pulse 2s ease-in-out infinite; }
+    h1 { margin-top: 10px; font-family: Orbitron, sans-serif; letter-spacing: 2px; font-size: clamp(1.7rem, 5vw, 3rem);
+      background: linear-gradient(120deg, var(--pink), var(--violet), var(--cyan)); background-size: 200% 200%;
+      -webkit-background-clip: text; background-clip: text; color: transparent; animation: flow 4s ease-in-out infinite; }
+    .sub { margin-top: 6px; color: var(--muted); }
+    .msk { text-align: center; font-family: Orbitron, sans-serif; color: var(--muted); font-size: .85rem; letter-spacing: 2px; }
+    .msk b { color: var(--cyan); }
+    .grid { display: grid; gap: 12px; grid-template-columns: repeat(4,1fr); }
+    .card, .panel { background: var(--card); border: 1px solid var(--line); border-radius: 20px; backdrop-filter: blur(14px); }
+    .card { padding: 16px 10px; text-align: center; position: relative; overflow: hidden; }
+    .big { font-family: Orbitron, sans-serif; font-size: clamp(2.2rem, 8vw, 4.5rem); font-weight: 900; text-shadow: 0 0 28px rgba(255,255,255,.25); }
+    .label { margin-top: 4px; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; font-size: .74rem; }
+    .ring { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; transform: rotate(-90deg); opacity: .6; }
+    .ring circle { fill: none; stroke-width: 3; }
+    .ring .bgc { stroke: rgba(255,255,255,.08); }
+    .ring .fg { stroke: var(--pink); stroke-linecap: round; transition: stroke-dashoffset .45s ease; }
+    .progress { padding: 16px; }
+    .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; color: var(--muted); font-size: .9rem; }
+    .pct { font-family: Orbitron, sans-serif; color: var(--cyan); }
+    .track { margin-top: 10px; height: 8px; border-radius: 99px; background: rgba(255,255,255,.08); overflow: hidden; }
+    .fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--pink), var(--violet), var(--cyan)); transition: width .7s ease; }
+    .dates { margin-top: 10px; display: flex; justify-content: space-between; color: var(--muted); font-size: .72rem; }
+    .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+    .stat { padding: 12px; text-align: center; }
+    .sv { font-family: Orbitron, sans-serif; font-size: clamp(1rem, 2.8vw, 1.4rem); }
+    .sl { color: var(--muted); font-size: .7rem; text-transform: uppercase; margin-top: 2px; letter-spacing: 1px; }
+    .quote { padding: 20px; text-align: center; color: var(--muted); min-height: 88px; }
+    .q { font-style: italic; transition: opacity .35s ease, transform .35s ease; }
+    .q.hide { opacity: 0; transform: translateY(6px); }
+    .target { margin: 0 auto; width: fit-content; padding: 10px 18px; border-radius: 99px; border: 1px solid rgba(255,45,117,.3);
+      background: linear-gradient(135deg, rgba(255,45,117,.12), rgba(123,45,255,.12)); font-family: Orbitron, sans-serif; color: #ff9dc0; font-size: .8rem; }
+    .heart { position: fixed; z-index: 1; pointer-events: none; animation: up var(--d,8s) linear forwards; opacity: 0; }
+    .overlay { position: fixed; inset: 0; z-index: 9; display: none; place-items: center; text-align: center; background: rgba(10,10,26,.95); padding: 20px; }
+    .overlay.on { display: grid; }
+    .overlay h2 { font-family: Orbitron, sans-serif; font-size: clamp(2rem, 8vw, 4rem); background: linear-gradient(120deg, var(--pink), #ff8800, var(--pink));
+      -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .load { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; background: var(--bg); font-size: 3rem; animation: beat 1s ease-in-out infinite; }
+    .load.hide { opacity: 0; visibility: hidden; transition: opacity .8s ease, visibility .8s ease; }
+    @media (max-width: 800px){ .grid{grid-template-columns:repeat(2,1fr)} .stats{grid-template-columns:repeat(2,1fr)} }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes flow { 50% { background-position: 100% 50%; } }
+    @keyframes beat { 50% { transform: scale(1.2); } }
+    @keyframes pulse { 50% { opacity: .45; transform: scale(.8); } }
+    @keyframes up { 0%{transform:translateY(100vh) scale(0)} 10%{opacity:.85; transform:translateY(90vh) scale(1)} 100%{opacity:0; transform:translateY(-10vh) rotate(280deg) scale(.5)} }
+  </style>
+</head>
+<body>
+  <div class="load" id="load">💖</div>
+  <div class="aurora"></div><div class="bg"></div><canvas id="particles"></canvas>
+  <div class="overlay" id="overlay"><div><h2>ОНА ЗДЕСЬ! 💖</h2><p>Момент, которого вы ждали, наступил!</p></div></div>
+  <main class="app">
+    <section class="wrap">
+      <header class="header">
+        <div class="badge"><span class="dot"></span> LIVE COUNTDOWN</div>
+        <h1>WAITING FOR YOU</h1>
+        <p class="sub">Каждая секунда приближает встречу 💕</p>
+      </header>
+      <div class="msk">МСК: <b id="msk">--:--:--</b></div>
+      <section class="grid">
+        <article class="card"><div class="big" id="d">000</div><div class="label">Дней</div><svg class="ring" viewBox="0 0 36 36"><circle class="bgc" cx="18" cy="18" r="15.5"/><circle class="fg" id="rd" cx="18" cy="18" r="15.5" stroke-dasharray="97.4"/></svg></article>
+        <article class="card"><div class="big" id="h">00</div><div class="label">Часов</div><svg class="ring" viewBox="0 0 36 36"><circle class="bgc" cx="18" cy="18" r="15.5"/><circle class="fg" id="rh" cx="18" cy="18" r="15.5" stroke-dasharray="97.4"/></svg></article>
+        <article class="card"><div class="big" id="m">00</div><div class="label">Минут</div><svg class="ring" viewBox="0 0 36 36"><circle class="bgc" cx="18" cy="18" r="15.5"/><circle class="fg" id="rm" cx="18" cy="18" r="15.5" stroke-dasharray="97.4"/></svg></article>
+        <article class="card"><div class="big" id="s">00</div><div class="label">Секунд</div><svg class="ring" viewBox="0 0 36 36"><circle class="bgc" cx="18" cy="18" r="15.5"/><circle class="fg" id="rs" cx="18" cy="18" r="15.5" stroke-dasharray="97.4"/></svg></article>
+      </section>
+      <section class="panel progress">
+        <div class="row"><span>📊 Прогресс ожидания</span><b class="pct" id="pct">0.0000%</b></div>
+        <div class="track"><div class="fill" id="fill"></div></div>
+        <div class="dates"><span>Старт отсчета</span><span>13 марта 2026, 20:49 МСК</span></div>
+      </section>
+      <section class="stats">
+        <article class="panel stat"><div class="sv" id="th">0</div><div class="sl">Всего часов</div></article>
+        <article class="panel stat"><div class="sv" id="tm">0</div><div class="sl">Всего минут</div></article>
+        <article class="panel stat"><div class="sv" id="ts">0</div><div class="sl">Всего секунд</div></article>
+        <article class="panel stat"><div class="sv" id="hb">0</div><div class="sl">💓 Ударов сердца</div></article>
+      </section>
+      <section class="panel quote"><p class="q" id="q">Загрузка...</p><div id="qe">💌</div></section>
+      <div class="target">🎯 13.03.2026 20:49 MSK</div>
+    </section>
+  </main>
+  <script>
+    const TARGET = new Date(Date.UTC(2026, 2, 13, 17, 49, 0));
+    const START = new Date(Date.UTC(2025, 5, 15, 0, 0, 0));
+    const Q = [
+      ["Расстояние это просто проверка, как далеко может зайти любовь.", "💫"],
+      ["Я несу тебя в своем сердце. Я никогда не бываю без тебя.", "💖"],
+      ["Ожидание делает встречу еще прекраснее.", "🌟"],
+      ["Каждый закат приближает нас на один день к встрече.", "🌅"],
+      ["Ты мой сегодня и все мои завтра.", "🔮"],
+      ["Лучшее еще впереди.", "✨"],
+      ["Скоро. Совсем скоро. И навсегда.", "💕"],
+      ["Ты стоишь каждой секунды ожидания.", "💌"]
+    ];
+    const E = {
+      d: id("d"), h: id("h"), m: id("m"), s: id("s"), rd: id("rd"), rh: id("rh"), rm: id("rm"), rs: id("rs"),
+      msk: id("msk"), fill: id("fill"), pct: id("pct"), th: id("th"), tm: id("tm"), ts: id("ts"), hb: id("hb"),
+      q: id("q"), qe: id("qe"), load: id("load"), overlay: id("overlay")
+    };
+    function id(v){ return document.getElementById(v); }
+    function pad(v,n){ return String(v).padStart(n,"0"); }
+    function tick(){
+      const now = new Date();
+      const diff = TARGET - now;
+      const msk = new Date(now.getTime()+3*3600000);
+      E.msk.textContent = `${pad(msk.getUTCHours(),2)}:${pad(msk.getUTCMinutes(),2)}:${pad(msk.getUTCSeconds(),2)}`;
+      if (diff <= 0){ E.overlay.classList.add("on"); set(0,0,0,0); return; }
+      const t = Math.floor(diff/1000), d = Math.floor(t/86400), h = Math.floor((t%86400)/3600), m = Math.floor((t%3600)/60), s = t%60;
+      set(d,h,m,s);
+      const c = 97.4;
+      E.rd.style.strokeDashoffset = c - (c*((d%365)/365)); E.rh.style.strokeDashoffset = c - (c*(h/24));
+      E.rm.style.strokeDashoffset = c - (c*(m/60)); E.rs.style.strokeDashoffset = c - (c*(s/60));
+      const p = Math.min(Math.max(((now-START)/(TARGET-START))*100,0),100);
+      E.fill.style.width = p + "%"; E.pct.textContent = p.toFixed(4) + "%";
+      E.th.textContent = Math.floor(t/3600).toLocaleString("ru-RU");
+      E.tm.textContent = Math.floor(t/60).toLocaleString("ru-RU");
+      E.ts.textContent = t.toLocaleString("ru-RU");
+      E.hb.textContent = Math.floor(t*1.2).toLocaleString("ru-RU");
+    }
+    function set(d,h,m,s){ E.d.textContent=pad(d,3); E.h.textContent=pad(h,2); E.m.textContent=pad(m,2); E.s.textContent=pad(s,2); }
+    let qi = 0;
+    function rotateQ(){
+      E.q.classList.add("hide");
+      setTimeout(()=>{ E.q.textContent = Q[qi][0]; E.qe.textContent = Q[qi][1]; E.q.classList.remove("hide"); qi=(qi+1)%Q.length; }, 320);
+    }
+    const hearts = ["💖","💕","💗","💓","🩷","🦋","🌸"];
+    function spawn(){
+      const h = document.createElement("div");
+      h.className="heart"; h.textContent=hearts[Math.floor(Math.random()*hearts.length)];
+      h.style.left=Math.random()*100+"vw"; h.style.fontSize=(14+Math.random()*20)+"px"; h.style.setProperty("--d",(6+Math.random()*8)+"s");
+      document.body.appendChild(h); setTimeout(()=>h.remove(),14000);
+    }
+    function particles(){
+      const c=id("particles"), x=c.getContext("2d"); let p=[]; let mouse={x:-9999,y:-9999};
+      const resize=()=>{c.width=innerWidth;c.height=innerHeight}; resize(); addEventListener("resize",resize);
+      addEventListener("mousemove",e=>{mouse.x=e.clientX;mouse.y=e.clientY;});
+      class P{ constructor(){this.r();} r(){this.x=Math.random()*c.width;this.y=Math.random()*c.height;this.vx=(Math.random()-.5)*.3;this.vy=(Math.random()-.5)*.3;this.s=Math.random()*2+.5;this.o=Math.random()*.5+.1;}
+        u(){this.x+=this.vx;this.y+=this.vy; const dx=mouse.x-this.x,dy=mouse.y-this.y,dist=Math.hypot(dx,dy); if(dist<150){this.x-=dx*(150-dist)/150*.01;this.y-=dy*(150-dist)/150*.01;} if(this.x<0||this.x>c.width)this.vx*=-1; if(this.y<0||this.y>c.height)this.vy*=-1;}
+        d(){x.beginPath();x.arc(this.x,this.y,this.s,0,Math.PI*2);x.fillStyle=`rgba(255,80,160,${this.o})`;x.fill();}}
+      for(let i=0;i<Math.min(80,Math.floor(c.width*c.height/15000));i++)p.push(new P());
+      (function a(){x.clearRect(0,0,c.width,c.height); for(const n of p){n.u();n.d();}
+        for(let i=0;i<p.length;i++)for(let j=i+1;j<p.length;j++){const dx=p[i].x-p[j].x,dy=p[i].y-p[j].y,d=Math.hypot(dx,dy);if(d<120){x.beginPath();x.strokeStyle=`rgba(255,45,117,${(1-d/120)*.15})`;x.lineWidth=.5;x.moveTo(p[i].x,p[i].y);x.lineTo(p[j].x,p[j].y);x.stroke();}}
+        requestAnimationFrame(a);})();
+    }
+    addEventListener("load", ()=>{
+      setTimeout(()=>E.load.classList.add("hide"), 800);
+      particles(); tick(); rotateQ();
+      setInterval(tick, 1000); setInterval(rotateQ, 8000); setInterval(spawn, 3000);
+      setTimeout(spawn, 1000); setTimeout(spawn, 2000);
+    });
+  </script>
+</body>
+</html>

@@ -14,16 +14,17 @@
       --txt: #fff; --muted: rgba(255,255,255,.65);
     }
     body { min-height: 100vh; overflow-x: hidden; color: var(--txt); background: var(--bg); font-family: Poppins, sans-serif; }
-    .video-bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
-    .video-bg video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center center; opacity: .35; filter: blur(1px) saturate(1.15) brightness(.8); transform: scale(1.06); }
-    .aurora { position: fixed; inset: -50%; z-index: 0; pointer-events: none; opacity: .8;
+    .video-bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; background: #000; }
+    .video-bg::after { content: ""; position: absolute; inset: 0; background: rgba(6, 8, 18, .35); }
+    .video-bg video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center center; opacity: .82; filter: saturate(1.1) brightness(.9); transform: scale(1.02); }
+    .aurora { position: fixed; inset: -50%; z-index: 1; pointer-events: none; opacity: .35;
       background: conic-gradient(from 0deg, transparent, rgba(255,45,117,.06), transparent, rgba(123,45,255,.06), transparent, rgba(0,240,255,.06), transparent);
       animation: spin 28s linear infinite; }
-    .bg { position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    .bg { position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: .45;
       background: radial-gradient(circle at 20% 20%, rgba(255,45,117,.12), transparent 40%),
                   radial-gradient(circle at 80% 15%, rgba(123,45,255,.12), transparent 40%),
                   radial-gradient(circle at 50% 85%, rgba(0,240,255,.10), transparent 40%); }
-    .app { position: relative; z-index: 2; min-height: 100vh; display: grid; place-items: center; padding: 20px; }
+    .app { position: relative; z-index: 3; min-height: 100vh; display: grid; place-items: center; padding: 20px; }
     .wrap { width: min(980px, 100%); display: grid; gap: 18px; }
     .header { text-align: center; }
     .badge { display: inline-flex; gap: 8px; align-items: center; padding: 8px 18px; border: 1px solid var(--line); border-radius: 99px; background: var(--card); color: var(--muted); font-size: 12px; }
@@ -68,7 +69,8 @@
     @media (max-width: 800px){
       .grid{grid-template-columns:repeat(2,1fr)}
       .stats{grid-template-columns:repeat(2,1fr)}
-      .video-bg video { opacity: .48; filter: saturate(1.1) brightness(.72); transform: scale(1.18); }
+      .video-bg::after { background: rgba(6, 8, 18, .25); }
+      .video-bg video { opacity: .92; filter: saturate(1.05) brightness(.95); transform: scale(1.12); }
     }
     @keyframes spin { to { transform: rotate(360deg); } }
     @keyframes flow { 50% { background-position: 100% 50%; } }
@@ -169,9 +171,20 @@
     function startVideo(){
       const v = id("bgVideo");
       if (!v) return;
+      v.defaultMuted = true;
       v.muted = true;
-      const tryPlay = () => v.play().catch(() => {});
+      v.autoplay = true;
+      v.loop = true;
+      v.playsInline = true;
+      const tryPlay = () => {
+        const p = v.play();
+        if (p && p.catch) p.catch(() => {});
+      };
       tryPlay();
+      v.addEventListener("canplay", tryPlay);
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) tryPlay();
+      });
       addEventListener("touchstart", tryPlay, { once: true, passive: true });
       addEventListener("click", tryPlay, { once: true, passive: true });
     }

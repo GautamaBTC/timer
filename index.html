@@ -15,7 +15,7 @@
     }
     body { min-height: 100vh; overflow-x: hidden; color: var(--txt); background: var(--bg); font-family: Poppins, sans-serif; }
     .video-bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
-    .video-bg video { width: 100%; height: 100%; object-fit: cover; opacity: .2; filter: blur(2px) saturate(1.2); transform: scale(1.06); }
+    .video-bg video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center center; opacity: .35; filter: blur(1px) saturate(1.15) brightness(.8); transform: scale(1.06); }
     .aurora { position: fixed; inset: -50%; z-index: 0; pointer-events: none; opacity: .8;
       background: conic-gradient(from 0deg, transparent, rgba(255,45,117,.06), transparent, rgba(123,45,255,.06), transparent, rgba(0,240,255,.06), transparent);
       animation: spin 28s linear infinite; }
@@ -23,7 +23,6 @@
       background: radial-gradient(circle at 20% 20%, rgba(255,45,117,.12), transparent 40%),
                   radial-gradient(circle at 80% 15%, rgba(123,45,255,.12), transparent 40%),
                   radial-gradient(circle at 50% 85%, rgba(0,240,255,.10), transparent 40%); }
-    #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
     .app { position: relative; z-index: 2; min-height: 100vh; display: grid; place-items: center; padding: 20px; }
     .wrap { width: min(980px, 100%); display: grid; gap: 18px; }
     .header { text-align: center; }
@@ -36,7 +35,7 @@
     .msk { text-align: center; font-family: Orbitron, sans-serif; color: var(--muted); font-size: .85rem; letter-spacing: 2px; }
     .msk b { color: var(--cyan); }
     .grid { display: grid; gap: 12px; grid-template-columns: repeat(4,1fr); }
-    .card, .panel { background: var(--card); border: 1px solid var(--line); border-radius: 20px; backdrop-filter: blur(14px); }
+    .card, .panel { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.22); border-radius: 20px; backdrop-filter: blur(28px) saturate(1.25); -webkit-backdrop-filter: blur(28px) saturate(1.25); }
     .card { padding: 16px 10px; text-align: center; position: relative; overflow: hidden; }
     .big { font-family: Orbitron, sans-serif; font-size: clamp(2.2rem, 8vw, 4.5rem); font-weight: 900; text-shadow: 0 0 28px rgba(255,255,255,.25); }
     .label { margin-top: 4px; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; font-size: .74rem; }
@@ -66,7 +65,11 @@
       -webkit-background-clip: text; background-clip: text; color: transparent; }
     .load { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; background: var(--bg); font-size: 3rem; animation: beat 1s ease-in-out infinite; }
     .load.hide { opacity: 0; visibility: hidden; transition: opacity .8s ease, visibility .8s ease; }
-    @media (max-width: 800px){ .grid{grid-template-columns:repeat(2,1fr)} .stats{grid-template-columns:repeat(2,1fr)} }
+    @media (max-width: 800px){
+      .grid{grid-template-columns:repeat(2,1fr)}
+      .stats{grid-template-columns:repeat(2,1fr)}
+      .video-bg video { opacity: .48; filter: saturate(1.1) brightness(.72); transform: scale(1.18); }
+    }
     @keyframes spin { to { transform: rotate(360deg); } }
     @keyframes flow { 50% { background-position: 100% 50%; } }
     @keyframes beat { 50% { transform: scale(1.2); } }
@@ -77,11 +80,11 @@
 <body>
   <div class="load" id="load">💖</div>
   <div class="video-bg">
-    <video autoplay muted loop playsinline id="bgVideo">
+    <video autoplay muted loop playsinline webkit-playsinline preload="auto" id="bgVideo">
       <source src="./video.mp4" type="video/mp4">
     </video>
   </div>
-  <div class="aurora"></div><div class="bg"></div><canvas id="particles"></canvas>
+  <div class="aurora"></div><div class="bg"></div>
   <div class="overlay" id="overlay"><div><h2>ОНА ЗДЕСЬ! 💖</h2><p>Момент, которого вы ждали, наступил!</p></div></div>
   <main class="app">
     <section class="wrap">
@@ -163,21 +166,18 @@
       h.style.left=Math.random()*100+"vw"; h.style.fontSize=(14+Math.random()*20)+"px"; h.style.setProperty("--d",(6+Math.random()*8)+"s");
       document.body.appendChild(h); setTimeout(()=>h.remove(),14000);
     }
-    function particles(){
-      const c=id("particles"), x=c.getContext("2d"); let p=[]; let mouse={x:-9999,y:-9999};
-      const resize=()=>{c.width=innerWidth;c.height=innerHeight}; resize(); addEventListener("resize",resize);
-      addEventListener("mousemove",e=>{mouse.x=e.clientX;mouse.y=e.clientY;});
-      class P{ constructor(){this.r();} r(){this.x=Math.random()*c.width;this.y=Math.random()*c.height;this.vx=(Math.random()-.5)*.3;this.vy=(Math.random()-.5)*.3;this.s=Math.random()*2+.5;this.o=Math.random()*.5+.1;}
-        u(){this.x+=this.vx;this.y+=this.vy; const dx=mouse.x-this.x,dy=mouse.y-this.y,dist=Math.hypot(dx,dy); if(dist<150){this.x-=dx*(150-dist)/150*.01;this.y-=dy*(150-dist)/150*.01;} if(this.x<0||this.x>c.width)this.vx*=-1; if(this.y<0||this.y>c.height)this.vy*=-1;}
-        d(){x.beginPath();x.arc(this.x,this.y,this.s,0,Math.PI*2);x.fillStyle=`rgba(255,80,160,${this.o})`;x.fill();}}
-      for(let i=0;i<Math.min(80,Math.floor(c.width*c.height/15000));i++)p.push(new P());
-      (function a(){x.clearRect(0,0,c.width,c.height); for(const n of p){n.u();n.d();}
-        for(let i=0;i<p.length;i++)for(let j=i+1;j<p.length;j++){const dx=p[i].x-p[j].x,dy=p[i].y-p[j].y,d=Math.hypot(dx,dy);if(d<120){x.beginPath();x.strokeStyle=`rgba(255,45,117,${(1-d/120)*.15})`;x.lineWidth=.5;x.moveTo(p[i].x,p[i].y);x.lineTo(p[j].x,p[j].y);x.stroke();}}
-        requestAnimationFrame(a);})();
+    function startVideo(){
+      const v = id("bgVideo");
+      if (!v) return;
+      v.muted = true;
+      const tryPlay = () => v.play().catch(() => {});
+      tryPlay();
+      addEventListener("touchstart", tryPlay, { once: true, passive: true });
+      addEventListener("click", tryPlay, { once: true, passive: true });
     }
     addEventListener("load", ()=>{
       setTimeout(()=>E.load.classList.add("hide"), 800);
-      particles(); tick(); rotateQ();
+      startVideo(); tick(); rotateQ();
       setInterval(tick, 1000); setInterval(rotateQ, 8000); setInterval(spawn, 3000);
       setTimeout(spawn, 1000); setTimeout(spawn, 2000);
     });

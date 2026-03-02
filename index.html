@@ -16,6 +16,21 @@
     body { min-height: 100vh; overflow: hidden; color: var(--txt); background: #000; font-family: Poppins, sans-serif; }
     .video-bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; background: #000; }
     .video-bg video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center center; opacity: 1; filter: none; transform: scale(1.02); }
+    .music-btn {
+      position: fixed;
+      right: 10px;
+      bottom: 10px;
+      z-index: 20;
+      border: 1px solid rgba(255,255,255,.35);
+      background: rgba(0,0,0,.35);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: .78rem;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .music-btn.off { opacity: .75; }
     .app { position: relative; z-index: 3; height: 100dvh; min-height: 100dvh; display: grid; place-items: center; padding: 12px; overflow: hidden; }
     .wrap { width: min(980px, 100%); display: grid; gap: 16px; transform: scale(var(--mobile-scale, 1)); transform-origin: top center; }
     .header { text-align: center; }
@@ -82,6 +97,10 @@
       <source src="./video.mp4" type="video/mp4">
     </video>
   </div>
+  <audio id="bgMusic" loop preload="auto">
+    <source src="./music.mp3" type="audio/mpeg">
+  </audio>
+  <button id="musicToggle" class="music-btn off" type="button">Music: OFF</button>
   <div class="overlay" id="overlay"><div><h2>ОНА ЗДЕСЬ! 💖</h2><p>Момент, которого вы ждали, наступил!</p></div></div>
   <main class="app">
     <section class="wrap">
@@ -128,7 +147,8 @@
     const E = {
       d: id("d"), h: id("h"), m: id("m"), s: id("s"), rd: id("rd"), rh: id("rh"), rm: id("rm"), rs: id("rs"),
       msk: id("msk"), fill: id("fill"), pct: id("pct"), th: id("th"), tm: id("tm"), ts: id("ts"), hb: id("hb"),
-      q: id("q"), qe: id("qe"), load: id("load"), overlay: id("overlay")
+      q: id("q"), qe: id("qe"), load: id("load"), overlay: id("overlay"),
+      music: id("bgMusic"), musicToggle: id("musicToggle")
     };
     function id(v){ return document.getElementById(v); }
     function pad(v,n){ return String(v).padStart(n,"0"); }
@@ -196,9 +216,39 @@
       const scale = Math.min(1, maxH / contentH, maxW / contentW);
       wrap.style.setProperty("--mobile-scale", String(Math.max(scale, 0.62)));
     }
+    function setMusicButton(isOn){
+      E.musicToggle.textContent = isOn ? "Music: ON" : "Music: OFF";
+      E.musicToggle.classList.toggle("off", !isOn);
+    }
+    function initMusic(){
+      const a = E.music;
+      if (!a || !E.musicToggle) return;
+      a.volume = 0.35;
+      setMusicButton(false);
+
+      const tryStart = () => {
+        const p = a.play();
+        if (p && p.then) {
+          p.then(() => setMusicButton(true)).catch(() => setMusicButton(false));
+        }
+      };
+
+      E.musicToggle.addEventListener("click", () => {
+        if (a.paused) {
+          tryStart();
+        } else {
+          a.pause();
+          setMusicButton(false);
+        }
+      });
+
+      addEventListener("touchstart", tryStart, { once: true, passive: true });
+      addEventListener("click", tryStart, { once: true, passive: true });
+    }
     addEventListener("load", ()=>{
       setTimeout(()=>E.load.classList.add("hide"), 800);
       startVideo(); tick(); rotateQ();
+      initMusic();
       fitMobileLayout();
       setInterval(tick, 1000); setInterval(rotateQ, 8000); setInterval(spawn, 3000);
       setTimeout(spawn, 1000); setTimeout(spawn, 2000);

@@ -7,135 +7,390 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💖</text></svg>">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
+    /* ===== BASE & RESET ===== */
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    
     :root {
+      /* Prism Flux inspired palette */
       --pink: #ff2d75; --violet: #7b2dff; --cyan: #00f0ff;
       --bg: #0a0a1a; --card: rgba(255,255,255,.04); --line: rgba(255,255,255,.12);
       --txt: #fff; --muted: rgba(255,255,255,.65);
+      --success: #00ff88;
     }
-    body { min-height: 100vh; overflow: hidden; color: var(--txt); background: #000; font-family: Poppins, sans-serif; }
-    .video-bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; background: #000; }
-    .video-bg video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center center; opacity: 1; filter: none; transform: scale(1.02); }
-    .music-btn {
-      position: fixed;
-      right: 10px;
-      bottom: 10px;
-      z-index: 20;
-      border: 1px solid rgba(255,255,255,.35);
-      background: rgba(0,0,0,.35);
-      color: #fff;
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: .78rem;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+    
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f8f9ff; --card: rgba(10,10,26,.04); --line: rgba(10,10,26,.12);
+        --txt: #0a0a1a; --muted: rgba(10,10,26,.65);
+      }
     }
-    .music-btn.off { opacity: .75; }
-    .app { position: relative; z-index: 3; height: 100dvh; min-height: 100dvh; display: grid; place-items: center; padding: 12px; overflow: hidden; }
-    .wrap { width: min(980px, 100%); display: grid; gap: 16px; transform: scale(var(--mobile-scale, 1)); transform-origin: top center; }
+    
+    /* Respect reduced motion preferences */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+    
+    body { 
+      min-height: 100vh; 
+      color: var(--txt); 
+      background: var(--bg); 
+      font-family: Poppins, sans-serif;
+      line-height: 1.5;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    
+    /* ===== LAYOUT ===== */
+    .app { 
+      min-height: 100dvh; 
+      display: grid; 
+      place-items: center;       padding: 16px; 
+    }
+    
+    .wrap { 
+      width: min(980px, 100%); 
+      display: grid; 
+      gap: 16px; 
+    }
+    
+    /* ===== HEADER ===== */
     .header { text-align: center; }
-    .badge { display: inline-flex; gap: 8px; align-items: center; padding: 8px 18px; border: 1px solid var(--line); border-radius: 99px; background: var(--card); color: var(--muted); font-size: 12px; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: #00ff88; box-shadow: 0 0 12px #00ff88; animation: pulse 2s ease-in-out infinite; }
-    h1 { margin-top: 10px; font-family: Orbitron, sans-serif; letter-spacing: 2px; font-size: clamp(1.7rem, 5vw, 3rem);
-      background: linear-gradient(120deg, var(--pink), var(--violet), var(--cyan)); background-size: 200% 200%;
-      -webkit-background-clip: text; background-clip: text; color: transparent; animation: flow 4s ease-in-out infinite; }
+    
+    .badge { 
+      display: inline-flex; gap: 8px; align-items: center; 
+      padding: 8px 18px; 
+      border: 1px solid var(--line); 
+      border-radius: 99px; 
+      background: var(--card); 
+      color: var(--muted); 
+      font-size: 12px; 
+    }
+    
+    .dot { 
+      width: 8px; height: 8px; border-radius: 50%; 
+      background: var(--success); 
+      box-shadow: 0 0 12px var(--success); 
+      animation: pulse 2s ease-in-out infinite; 
+    }
+    
+    h1 { 
+      margin-top: 10px; 
+      font-family: Orbitron, sans-serif; 
+      letter-spacing: 2px; 
+      font-size: clamp(1.7rem, 5vw, 3rem);
+      background: linear-gradient(120deg, var(--pink), var(--violet), var(--cyan)); 
+      background-size: 200% 200%;
+      -webkit-background-clip: text; background-clip: text; 
+      color: transparent; 
+      animation: flow 4s ease-in-out infinite; 
+    }
+    
     .sub { margin-top: 6px; color: var(--muted); }
-    .msk { text-align: center; font-family: Orbitron, sans-serif; color: var(--muted); font-size: .85rem; letter-spacing: 2px; }
+    
+    /* ===== MOSCOW TIME ===== */
+    .msk { 
+      text-align: center; 
+      font-family: Orbitron, sans-serif; 
+      color: var(--muted); 
+      font-size: .85rem; 
+      letter-spacing: 2px;     }
     .msk b { color: var(--cyan); }
-    .grid { display: grid; gap: 12px; grid-template-columns: repeat(4,1fr); }
-    .card, .panel { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.22); border-radius: 20px; backdrop-filter: blur(28px) saturate(1.25); -webkit-backdrop-filter: blur(28px) saturate(1.25); }
-    .card { padding: 16px 10px; text-align: center; position: relative; overflow: hidden; }
-    .big { font-family: Orbitron, sans-serif; font-size: clamp(2.2rem, 8vw, 4.5rem); font-weight: 900; text-shadow: 0 0 28px rgba(255,255,255,.25); }
-    .label { margin-top: 4px; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; font-size: .74rem; }
-    .ring { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; transform: rotate(-90deg); opacity: .6; }
+    
+    /* ===== COUNTDOWN GRID ===== */
+    .grid { 
+      display: grid; 
+      gap: 12px; 
+      grid-template-columns: repeat(4, 1fr); 
+    }
+    
+    .card { 
+      background: var(--card); 
+      border: 1px solid var(--line); 
+      border-radius: 20px; 
+      padding: 16px 10px; 
+      text-align: center; 
+      position: relative; 
+      overflow: hidden;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .card:hover { 
+      transform: translateY(-2px); 
+      border-color: var(--cyan); 
+    }
+    
+    .big { 
+      font-family: Orbitron, sans-serif; 
+      font-size: clamp(2.2rem, 8vw, 4.5rem); 
+      font-weight: 900; 
+      text-shadow: 0 0 28px rgba(255,255,255,.25); 
+    }
+    
+    .label { 
+      margin-top: 4px; 
+      color: var(--muted); 
+      text-transform: uppercase; 
+      letter-spacing: 2px; 
+      font-size: .74rem; 
+    }
+    
+    /* ===== SVG PROGRESS RINGS ===== */
+    .ring { 
+      position: absolute; top: 8px; right: 8px; 
+      width: 28px; height: 28px; 
+      transform: rotate(-90deg); 
+      opacity: .6; 
+    }
     .ring circle { fill: none; stroke-width: 3; }
-    .ring .bgc { stroke: rgba(255,255,255,.08); }
-    .ring .fg { stroke: var(--pink); stroke-linecap: round; transition: stroke-dashoffset .45s ease; }
-    .progress { padding: 16px; }
-    .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; color: var(--muted); font-size: .9rem; }
+    .ring .bgc { stroke: var(--line); }
+    .ring .fg {       stroke: var(--pink); 
+      stroke-linecap: round; 
+      transition: stroke-dashoffset 0.45s ease; 
+    }
+    
+    /* ===== PROGRESS PANEL ===== */
+    .panel { 
+      background: var(--card); 
+      border: 1px solid var(--line); 
+      border-radius: 20px; 
+      padding: 16px; 
+    }
+    
+    .progress .row { 
+      display: flex; justify-content: space-between; align-items: center; 
+      gap: 10px; color: var(--muted); font-size: .9rem; 
+    }
     .pct { font-family: Orbitron, sans-serif; color: var(--cyan); }
-    .track { margin-top: 10px; height: 8px; border-radius: 99px; background: rgba(255,255,255,.08); overflow: hidden; }
-    .fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--pink), var(--violet), var(--cyan)); transition: width .7s ease; }
-    .dates { margin-top: 10px; display: flex; justify-content: space-between; color: var(--muted); font-size: .72rem; }
-    .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+    
+    .track { 
+      margin-top: 10px; height: 8px; border-radius: 99px; 
+      background: var(--line); overflow: hidden; 
+    }
+    .fill { 
+      height: 100%; width: 0; 
+      background: linear-gradient(90deg, var(--pink), var(--violet), var(--cyan)); 
+      transition: width 0.7s ease; 
+    }
+    
+    .dates { 
+      margin-top: 10px; display: flex; justify-content: space-between; 
+      color: var(--muted); font-size: .72rem; flex-wrap: wrap; gap: 4px;
+    }
+    
+    /* ===== STATS ===== */
+    .stats { 
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; 
+    }
     .stat { padding: 12px; text-align: center; }
     .sv { font-family: Orbitron, sans-serif; font-size: clamp(1rem, 2.8vw, 1.4rem); }
     .sl { color: var(--muted); font-size: .7rem; text-transform: uppercase; margin-top: 2px; letter-spacing: 1px; }
-    .quote { padding: 20px; text-align: center; color: var(--muted); min-height: 88px; }
-    .q { font-style: italic; transition: opacity .35s ease, transform .35s ease; }
+    
+    /* ===== QUOTE ===== */
+    .quote { text-align: center; color: var(--muted); min-height: 88px; }
+    .q { font-style: italic; transition: opacity 0.35s ease, transform 0.35s ease; }
     .q.hide { opacity: 0; transform: translateY(6px); }
-    .target { margin: 0 auto; width: fit-content; padding: 10px 18px; border-radius: 99px; border: 1px solid rgba(255,45,117,.3);
-      background: linear-gradient(135deg, rgba(255,45,117,.12), rgba(123,45,255,.12)); font-family: Orbitron, sans-serif; color: #ff9dc0; font-size: .8rem; }
-    .heart { position: fixed; z-index: 1; pointer-events: none; animation: up var(--d,8s) linear forwards; opacity: 0; }
-    .overlay { position: fixed; inset: 0; z-index: 9; display: none; place-items: center; text-align: center; background: rgba(10,10,26,.95); padding: 20px; }
-    .overlay.on { display: grid; }
-    .overlay h2 { font-family: Orbitron, sans-serif; font-size: clamp(2rem, 8vw, 4rem); background: linear-gradient(120deg, var(--pink), #ff8800, var(--pink));
-      -webkit-background-clip: text; background-clip: text; color: transparent; }
-    .load { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; background: var(--bg); font-size: 3rem; animation: beat 1s ease-in-out infinite; }
-    .load.hide { opacity: 0; visibility: hidden; transition: opacity .8s ease, visibility .8s ease; }
-    @media (max-width: 800px){
-      .app { padding: 6px; place-items: start center; }
-      .wrap { width: min(100%, 430px); gap: 8px; }
-      .header { transform: scale(.95); transform-origin: top center; }
-      .progress { padding: 10px; }
-      .quote { padding: 12px; min-height: 64px; }
-      .target { padding: 6px 10px; font-size: .68rem; }
-      .grid{grid-template-columns:repeat(2,1fr)}
-      .stats{grid-template-columns:repeat(2,1fr)}
-      .video-bg video { opacity: 1; filter: none; transform: scale(1.12); }
+    
+    /* ===== TARGET BADGE ===== */
+    .target { 
+      margin: 0 auto; width: fit-content;       padding: 10px 18px; border-radius: 99px; 
+      border: 1px solid rgba(255,45,117,.3);
+      background: linear-gradient(135deg, rgba(255,45,117,.12), rgba(123,45,255,.12)); 
+      font-family: Orbitron, sans-serif; color: var(--pink); font-size: .8rem; 
     }
+    
+    /* ===== DAYS PASSED BADGE ===== */
+    .passed {
+      margin: 0 auto; width: fit-content;
+      padding: 8px 16px; border-radius: 99px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      font-family: Orbitron, sans-serif; color: var(--cyan); font-size: .75rem;
+    }
+    .passed b { color: var(--success); }
+    
+    /* ===== OVERLAY (FINISHED STATE) ===== */
+    .overlay { 
+      position: fixed; inset: 0; z-index: 9; 
+      display: none; place-items: center; text-align: center; 
+      background: rgba(10,10,26,.95); padding: 20px; 
+    }
+    .overlay.on { display: grid; }
+    .overlay h2 { 
+      font-family: Orbitron, sans-serif; font-size: clamp(2rem, 8vw, 4rem); 
+      background: linear-gradient(120deg, var(--pink), #ff8800, var(--pink));
+      -webkit-background-clip: text; background-clip: text; color: transparent; 
+    }
+    
+    /* ===== FLOATING HEARTS (decorative) ===== */
+    .heart { 
+      position: fixed; z-index: 1; pointer-events: none; 
+      animation: up var(--d, 8s) linear forwards; opacity: 0; 
+      will-change: transform, opacity;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .heart { display: none; }
+    }
+    
+    /* ===== LOADER ===== */
+    .load { 
+      position: fixed; inset: 0; z-index: 10; 
+      display: grid; place-items: center; 
+      background: var(--bg); font-size: 3rem; 
+      animation: beat 1s ease-in-out infinite; 
+    }
+    .load.hide { 
+      opacity: 0; visibility: hidden; 
+      transition: opacity 0.8s ease, visibility 0.8s ease; 
+    }    
+    /* ===== ANIMATIONS ===== */
     @keyframes flow { 50% { background-position: 100% 50%; } }
     @keyframes beat { 50% { transform: scale(1.2); } }
     @keyframes pulse { 50% { opacity: .45; transform: scale(.8); } }
-    @keyframes up { 0%{transform:translateY(100vh) scale(0)} 10%{opacity:.85; transform:translateY(90vh) scale(1)} 100%{opacity:0; transform:translateY(-10vh) rotate(280deg) scale(.5)} }
+    @keyframes up { 
+      0% { transform: translateY(100vh) scale(0); opacity: 0; } 
+      10% { opacity: .85; transform: translateY(90vh) scale(1); } 
+      100% { opacity: 0; transform: translateY(-10vh) rotate(280deg) scale(.5); } 
+    }
+    
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 800px) {
+      .app { padding: 8px; place-items: start center; }
+      .wrap { width: 100%; gap: 12px; }
+      .header { transform: none; }
+      .progress { padding: 12px; }
+      .quote { padding: 12px; min-height: 64px; }
+      .target, .passed { padding: 6px 12px; font-size: .7rem; }
+      .grid { grid-template-columns: repeat(2, 1fr); }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+    }
+    
+    @media (max-width: 480px) {
+      .grid { grid-template-columns: 1fr 1fr; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .big { font-size: clamp(1.8rem, 7vw, 3rem); }
+    }
   </style>
 </head>
 <body>
-  <div class="load" id="load">💖</div>
-  <div class="video-bg">
-    <video autoplay muted loop playsinline webkit-playsinline preload="auto" id="bgVideo">
-      <source src="./video.mp4" type="video/mp4">
-    </video>
+  <!-- Loader -->
+  <div class="load" id="load" role="status" aria-label="Загрузка">💖</div>
+  
+  <!-- Finished Overlay -->
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div>
+      <h2>ОНА ЗДЕСЬ! 💖</h2>
+      <p style="color:var(--muted);margin-top:8px">Момент, которого вы ждали, наступил!</p>
+    </div>
   </div>
-  <audio id="bgMusic" loop preload="auto">
-    <source src="./music.mp3" type="audio/mpeg">
-  </audio>
-  <button id="musicToggle" class="music-btn off" type="button">Music: OFF</button>
-  <div class="overlay" id="overlay"><div><h2>ОНА ЗДЕСЬ! 💖</h2><p>Момент, которого вы ждали, наступил!</p></div></div>
-  <main class="app">
+  
+  <!-- Main App -->
+  <main class="app" id="app" aria-live="polite">
     <section class="wrap">
+      
+      <!-- Header -->
       <header class="header">
-        <div class="badge"><span class="dot"></span> LIVE COUNTDOWN</div>
+        <div class="badge">
+          <span class="dot" aria-hidden="true"></span>          <span>LIVE COUNTDOWN</span>
+        </div>
         <h1>WAITING FOR YOU</h1>
         <p class="sub">Каждая секунда приближает встречу 💕</p>
       </header>
-      <div class="msk">МСК: <b id="msk">--:--:--</b></div>
-      <section class="grid">
-        <article class="card"><div class="big" id="d">000</div><div class="label">Дней</div><svg class="ring" viewBox="0 0 36 36"><circle class="bgc" cx="18" cy="18" r="15.5"/><circle class="fg" id="rd" cx="18" cy="18" r="15.5" stroke-dasharray="97.4"/></svg></article>
-        <article class="card"><div class="big" id="h">00</div><div class="label">Часов</div><svg class="ring" viewBox="0 0 36 36"><circle class="bgc" cx="18" cy="18" r="15.5"/><circle class="fg" id="rh" cx="18" cy="18" r="15.5" stroke-dasharray="97.4"/></svg></article>
-        <article class="card"><div class="big" id="m">00</div><div class="label">Минут</div><svg class="ring" viewBox="0 0 36 36"><circle class="bgc" cx="18" cy="18" r="15.5"/><circle class="fg" id="rm" cx="18" cy="18" r="15.5" stroke-dasharray="97.4"/></svg></article>
-        <article class="card"><div class="big" id="s">00</div><div class="label">Секунд</div><svg class="ring" viewBox="0 0 36 36"><circle class="bgc" cx="18" cy="18" r="15.5"/><circle class="fg" id="rs" cx="18" cy="18" r="15.5" stroke-dasharray="97.4"/></svg></article>
+      
+      <!-- Moscow Time -->
+      <div class="msk" aria-label="Текущее время Москва">МСК: <b id="msk" aria-live="polite">--:--:--</b></div>
+      
+      <!-- Countdown Cards -->
+      <section class="grid" role="timer" aria-label="Обратный отсчёт">
+        <article class="card">
+          <div class="big" id="d" aria-label="Дней">000</div>
+          <div class="label">Дней</div>
+          <svg class="ring" viewBox="0 0 36 36" aria-hidden="true">
+            <circle class="bgc" cx="18" cy="18" r="15.5"/>
+            <circle class="fg" id="rd" cx="18" cy="18" r="15.5" stroke-dasharray="97.4"/>
+          </svg>
+        </article>
+        <article class="card">
+          <div class="big" id="h" aria-label="Часов">00</div>
+          <div class="label">Часов</div>
+          <svg class="ring" viewBox="0 0 36 36" aria-hidden="true">
+            <circle class="bgc" cx="18" cy="18" r="15.5"/>
+            <circle class="fg" id="rh" cx="18" cy="18" r="15.5" stroke-dasharray="97.4"/>
+          </svg>
+        </article>
+        <article class="card">
+          <div class="big" id="m" aria-label="Минут">00</div>
+          <div class="label">Минут</div>
+          <svg class="ring" viewBox="0 0 36 36" aria-hidden="true">
+            <circle class="bgc" cx="18" cy="18" r="15.5"/>
+            <circle class="fg" id="rm" cx="18" cy="18" r="15.5" stroke-dasharray="97.4"/>
+          </svg>
+        </article>
+        <article class="card">
+          <div class="big" id="s" aria-label="Секунд">00</div>
+          <div class="label">Секунд</div>
+          <svg class="ring" viewBox="0 0 36 36" aria-hidden="true">
+            <circle class="bgc" cx="18" cy="18" r="15.5"/>
+            <circle class="fg" id="rs" cx="18" cy="18" r="15.5" stroke-dasharray="97.4"/>
+          </svg>
+        </article>
       </section>
+      
+      <!-- Progress Panel -->
       <section class="panel progress">
-        <div class="row"><span>📊 Прогресс ожидания</span><b class="pct" id="pct">0.0000%</b></div>
-        <div class="track"><div class="fill" id="fill"></div></div>
-        <div class="dates"><span>Старт отсчета</span><span>13 марта 2026, 20:49 МСК</span></div>
+        <div class="row">
+          <span>📊 Прогресс ожидания</span>
+          <b class="pct" id="pct" aria-live="polite">0.0000%</b>        </div>
+        <div class="track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+          <div class="fill" id="fill"></div>
+        </div>
+        <div class="dates">
+          <span>Старт: <b>20.03.2026</b></span>
+          <span>Финиш: <b>23.07.2026, 20:49 МСК</b></span>
+        </div>
       </section>
+      
+      <!-- Stats -->
       <section class="stats">
-        <article class="panel stat"><div class="sv" id="th">0</div><div class="sl">Всего часов</div></article>
-        <article class="panel stat"><div class="sv" id="tm">0</div><div class="sl">Всего минут</div></article>
-        <article class="panel stat"><div class="sv" id="ts">0</div><div class="sl">Всего секунд</div></article>
-        <article class="panel stat"><div class="sv" id="hb">0</div><div class="sl">💓 Ударов сердца</div></article>
+        <article class="panel stat">
+          <div class="sv" id="th" aria-label="Всего часов">0</div>
+          <div class="sl">Всего часов</div>
+        </article>
+        <article class="panel stat">
+          <div class="sv" id="tm" aria-label="Всего минут">0</div>
+          <div class="sl">Всего минут</div>
+        </article>
+        <article class="panel stat">
+          <div class="sv" id="ts" aria-label="Всего секунд">0</div>
+          <div class="sl">Всего секунд</div>
+        </article>
+        <article class="panel stat">
+          <div class="sv" id="hb" aria-label="Ударов сердца">0</div>
+          <div class="sl">💓 Ударов сердца</div>
+        </article>
       </section>
-      <section class="panel quote"><p class="q" id="q">Загрузка...</p><div id="qe">💌</div></section>
+      
+      <!-- Quote -->
+      <section class="panel quote">
+        <p class="q" id="q" aria-live="polite">Загрузка...</p>
+        <div id="qe" aria-hidden="true">💌</div>
+      </section>
+      
+      <!-- Badges -->
+      <div class="passed">Прошло дней с 20.03: <b id="daysPassed">0</b></div>
       <div class="target">🎯 23.07.2026 20:49 MSK</div>
+      
     </section>
   </main>
+  
   <script>
-    // Новая целевая дата: 23 июля 2026, 17:49 UTC (20:49 МСК)
-    const TARGET = new Date(Date.UTC(2026, 6, 23, 17, 49, 0));
-    const START = new Date(Date.UTC(2025, 5, 15, 0, 0, 0));
-    const Q = [
+    // ===== CONFIG =====
+    const TARGET = new Date(Date.UTC(2026, 6, 23, 17, 49, 0)); // 23.07.2026 20:49 МСК
+    const START  = new Date(Date.UTC(2026, 2, 20, 0, 0, 0));   // 20.03.2026 00:00 МСК
+    const TOTAL_DURATION = TARGET - START;
+    
+    // ===== QUOTES =====    const Q = [
       ["Расстояние это просто проверка, как далеко может зайти любовь.", "💫"],
       ["Я несу тебя в своем сердце. Я никогда не бываю без тебя.", "💖"],
       ["Ожидание делает встречу еще прекраснее.", "🌟"],
@@ -145,116 +400,167 @@
       ["Скоро. Совсем скоро. И навсегда.", "💕"],
       ["Ты стоишь каждой секунды ожидания.", "💌"]
     ];
+    
+    // ===== ELEMENTS CACHE =====
     const E = {
-      d: id("d"), h: id("h"), m: id("m"), s: id("s"), rd: id("rd"), rh: id("rh"), rm: id("rm"), rs: id("rs"),
-      msk: id("msk"), fill: id("fill"), pct: id("pct"), th: id("th"), tm: id("tm"), ts: id("ts"), hb: id("hb"),
-      q: id("q"), qe: id("qe"), load: id("load"), overlay: id("overlay"),
-      music: id("bgMusic"), musicToggle: id("musicToggle")
+      d: id("d"), h: id("h"), m: id("m"), s: id("s"),
+      rd: id("rd"), rh: id("rh"), rm: id("rm"), rs: id("rs"),
+      msk: id("msk"), fill: id("fill"), pct: id("pct"),
+      th: id("th"), tm: id("tm"), ts: id("ts"), hb: id("hb"),
+      q: id("q"), qe: id("qe"), load: id("load"), 
+      overlay: id("overlay"), daysPassed: id("daysPassed"),
+      app: id("app")
     };
-    function id(v){ return document.getElementById(v); }
-    function pad(v,n){ return String(v).padStart(n,"0"); }
-    function tick(){
+    
+    function id(v) { return document.getElementById(v); }
+    function pad(v, n) { return String(v).padStart(n, "0"); }
+    
+    // ===== TIMEZONE HELPERS =====
+    function toMSK(date) {
+      return new Date(date.getTime() + 3 * 3600000);
+    }
+    
+    function formatMSKTime(date) {
+      const msk = toMSK(date);
+      return `${pad(msk.getUTCHours(), 2)}:${pad(msk.getUTCMinutes(), 2)}:${pad(msk.getUTCSeconds(), 2)}`;
+    }
+    
+    function formatMSKDate(date) {
+      const msk = toMSK(date);
+      return `${pad(msk.getUTCDate(), 2)}.${pad(msk.getUTCMonth() + 1, 2)}.${msk.getUTCFullYear()}`;
+    }
+    
+    // ===== COUNTDOWN LOGIC =====
+    function tick() {
       const now = new Date();
       const diff = TARGET - now;
-      const msk = new Date(now.getTime()+3*3600000);
-      E.msk.textContent = `${pad(msk.getUTCHours(),2)}:${pad(msk.getUTCMinutes(),2)}:${pad(msk.getUTCSeconds(),2)}`;
-      if (diff <= 0){ E.overlay.classList.add("on"); set(0,0,0,0); return; }
-      const t = Math.floor(diff/1000), d = Math.floor(t/86400), h = Math.floor((t%86400)/3600), m = Math.floor((t%3600)/60), s = t%60;
-      set(d,h,m,s);
-      const c = 97.4;
-      E.rd.style.strokeDashoffset = c - (c*((d%365)/365)); E.rh.style.strokeDashoffset = c - (c*(h/24));
-      E.rm.style.strokeDashoffset = c - (c*(m/60)); E.rs.style.strokeDashoffset = c - (c*(s/60));
-      const p = Math.min(Math.max(((now-START)/(TARGET-START))*100,0),100);
-      E.fill.style.width = p + "%"; E.pct.textContent = p.toFixed(4) + "%";
-      E.th.textContent = Math.floor(t/3600).toLocaleString("ru-RU");
-      E.tm.textContent = Math.floor(t/60).toLocaleString("ru-RU");
+      
+      // Update Moscow time display
+      E.msk.textContent = formatMSKTime(now);
+      
+      // Finished state
+      if (diff <= 0) {        E.overlay.classList.add("on");
+        E.overlay.setAttribute("aria-hidden", "false");
+        set(0, 0, 0, 0);
+        updateProgress(100);
+        return;
+      }
+      
+      // Calculate time units
+      const t = Math.floor(diff / 1000);
+      const d = Math.floor(t / 86400);
+      const h = Math.floor((t % 86400) / 3600);
+      const m = Math.floor((t % 3600) / 60);
+      const s = t % 60;
+      
+      set(d, h, m, s);
+      updateRings(d, h, m, s);
+      
+      // Progress calculation (clamped to [0, 100])
+      const progress = Math.min(Math.max(((now - START) / TOTAL_DURATION) * 100, 0), 100);
+      updateProgress(progress);
+      
+      // Stats
+      E.th.textContent = Math.floor(t / 3600).toLocaleString("ru-RU");
+      E.tm.textContent = Math.floor(t / 60).toLocaleString("ru-RU");
       E.ts.textContent = t.toLocaleString("ru-RU");
-      E.hb.textContent = Math.floor(t*1.2).toLocaleString("ru-RU");
+      E.hb.textContent = Math.floor(t * 1.2).toLocaleString("ru-RU");
+      
+      // Days passed since start
+      const daysPassed = Math.floor((now - START) / 86400000);
+      E.daysPassed.textContent = Math.max(0, daysPassed);
     }
-    function set(d,h,m,s){ E.d.textContent=pad(d,3); E.h.textContent=pad(h,2); E.m.textContent=pad(m,2); E.s.textContent=pad(s,2); }
+    
+    function set(d, h, m, s) {
+      E.d.textContent = pad(d, 3);
+      E.h.textContent = pad(h, 2);
+      E.m.textContent = pad(m, 2);
+      E.s.textContent = pad(s, 2);
+    }
+    
+    function updateRings(d, h, m, s) {
+      const c = 97.4;
+      E.rd.style.strokeDashoffset = c - (c * ((d % 365) / 365));
+      E.rh.style.strokeDashoffset = c - (c * (h / 24));
+      E.rm.style.strokeDashoffset = c - (c * (m / 60));
+      E.rs.style.strokeDashoffset = c - (c * (s / 60));
+    }
+    
+    function updateProgress(pct) {
+      E.fill.style.width = pct + "%";
+      E.pct.textContent = pct.toFixed(4) + "%";      // Update ARIA
+      E.fill.parentElement.setAttribute("aria-valuenow", Math.round(pct));
+    }
+    
+    // ===== QUOTE ROTATION =====
     let qi = 0;
-    function rotateQ(){
+    function rotateQ() {
       E.q.classList.add("hide");
-      setTimeout(()=>{ E.q.textContent = Q[qi][0]; E.qe.textContent = Q[qi][1]; E.q.classList.remove("hide"); qi=(qi+1)%Q.length; }, 320);
+      setTimeout(() => {
+        E.q.textContent = Q[qi][0];
+        E.qe.textContent = Q[qi][1];
+        E.q.classList.remove("hide");
+        qi = (qi + 1) % Q.length;
+      }, 320);
     }
-    const hearts = ["💖","💕","💗","💓","🩷","🦋","🌸"];
-    function spawn(){
+    
+    // ===== FLOATING HEARTS =====
+    const hearts = ["💖", "💕", "💗", "💓", "🩷", "🦋", "🌸"];
+    function spawn() {
+      // Skip if reduced motion preferred
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      
       const h = document.createElement("div");
-      h.className="heart"; h.textContent=hearts[Math.floor(Math.random()*hearts.length)];
-      h.style.left=Math.random()*100+"vw"; h.style.fontSize=(14+Math.random()*20)+"px"; h.style.setProperty("--d",(6+Math.random()*8)+"s");
-      document.body.appendChild(h); setTimeout(()=>h.remove(),14000);
+      h.className = "heart";
+      h.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+      h.style.left = Math.random() * 100 + "vw";
+      h.style.fontSize = (14 + Math.random() * 20) + "px";
+      h.style.setProperty("--d", (6 + Math.random() * 8) + "s");
+      document.body.appendChild(h);
+      setTimeout(() => h.remove(), 14000);
     }
-    function startVideo(){
-      const v = id("bgVideo");
-      if (!v) return;
-      v.defaultMuted = true;
-      v.muted = true;
-      v.autoplay = true;
-      v.loop = true;
-      v.playsInline = true;
-      const tryPlay = () => {
-        const p = v.play();
-        if (p && p.catch) p.catch(() => {});
-      };
-      tryPlay();
-      v.addEventListener("canplay", tryPlay);
-      document.addEventListener("visibilitychange", () => {
-        if (!document.hidden) tryPlay();
-      });
-      addEventListener("touchstart", tryPlay, { once: true, passive: true });
-      addEventListener("click", tryPlay, { once: true, passive: true });
+    
+    // ===== INIT =====
+    function init() {
+      // Hide loader
+      setTimeout(() => {
+        E.load.classList.add("hide");
+        // Remove from DOM after transition
+        setTimeout(() => E.load?.remove(), 800);
+      }, 400);
+      
+      // Initial render
+      tick();
+      rotateQ();
+      
+      // Start intervals
+      setInterval(tick, 1000);
+      setInterval(rotateQ, 8000);
+      setInterval(spawn, 3000);
+            // Initial hearts burst
+      setTimeout(spawn, 500);
+      setTimeout(spawn, 1200);
+      
+      // Update ARIA on overlay
+      E.overlay.setAttribute("aria-hidden", "true");
     }
-    function fitMobileLayout(){
-      const wrap = document.querySelector(".wrap");
-      const app = document.querySelector(".app");
-      if (!wrap || !app) return;
-      wrap.style.setProperty("--mobile-scale", "1");
-      if (window.innerWidth > 800) return;
-      const maxH = app.clientHeight - 4;
-      const maxW = app.clientWidth - 4;
-      const contentH = wrap.scrollHeight;
-      const contentW = wrap.scrollWidth;
-      const scale = Math.min(1, maxH / contentH, maxW / contentW);
-      wrap.style.setProperty("--mobile-scale", String(Math.max(scale, 0.62)));
-    }
-    function setMusicButton(isOn){
-      E.musicToggle.textContent = isOn ? "Music: ON" : "Music: OFF";
-      E.musicToggle.classList.toggle("off", !isOn);
-    }
-    function initMusic(){
-      const a = E.music;
-      if (!a || !E.musicToggle) return;
-      a.volume = 0.35;
-      setMusicButton(false);
-
-      const tryStart = () => {
-        const p = a.play();
-        if (p && p.then) {
-          p.then(() => setMusicButton(true)).catch(() => setMusicButton(false));
-        }
-      };
-
-      E.musicToggle.addEventListener("click", () => {
-        if (a.paused) {
-          tryStart();
-        } else {
-          a.pause();
-          setMusicButton(false);
-        }
-      });
-
-      addEventListener("touchstart", tryStart, { once: true, passive: true });
-      addEventListener("click", tryStart, { once: true, passive: true });
-    }
-    addEventListener("load", ()=>{
-      setTimeout(()=>E.load.classList.add("hide"), 800);
-      startVideo(); tick(); rotateQ();
-      initMusic();
-      fitMobileLayout();
-      setInterval(tick, 1000); setInterval(rotateQ, 8000); setInterval(spawn, 3000);
-      setTimeout(spawn, 1000); setTimeout(spawn, 2000);
+    
+    // ===== EVENTS =====
+    window.addEventListener("load", init);
+    
+    // Handle visibility change (pause heavy animations when tab inactive)
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        // Optional: reduce update frequency when tab is hidden
+      }
     });
-    addEventListener("resize", fitMobileLayout);
+    
+    // Handle system theme change
+    if (window.matchMedia) {
+      window.matchMedia("(prefers-color-scheme: light)").addEventListener?.("change", () => {
+        // CSS handles it automatically via variables
+      });
+    }
   </script>
 </body>
 </html>

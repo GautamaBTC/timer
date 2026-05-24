@@ -37,17 +37,19 @@
       box-sizing: border-box;
     }
 
-    /* ===== STRICT SCROLLBAR ELIMINATION ===== */
+    /* ===== VIEWPORT FIX FOR MOBILE BROWSERS ===== */
     html, body {
       position: fixed;
       width: 100%;
       height: 100%;
+      height: 100dvh; /* Ключевое исправление для динамической высоты */
       overflow: hidden;
       background-color: var(--bg-color);
       color: #f4f4f7;
       font-family: var(--font-plus);
-      overscroll-behavior: none;
+      overscroll-behavior: none;      -webkit-overflow-scrolling: touch;
     }
+
     /* ===== CANVAS LAYER ===== */
     #particle-canvas {
       position: absolute;
@@ -94,9 +96,9 @@
     }
 
     /* ===== RADIAL PROGRESS RINGS ===== */
-    .svg-ring {
-      transform: rotate(-90deg);
-      transform-origin: 50% 50%;    }
+    .svg-ring {      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+    }
     .svg-ring-bg {
       fill: none;
       stroke: rgba(255, 255, 255, 0.03);
@@ -144,24 +146,62 @@
     #glow-orb-1, #glow-orb-2 {
       transition: background 2s ease-in-out !important;
     }
+    /* ===== SAFE AREA & COMPACT SCREEN FIXES ===== */
+    .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
 
-    /* ===== SAFE AREA & COMPACT SCREEN FIXES ===== */    .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
-
-    @media (max-height: 680px) {
-      main { padding-top: 12px !important; padding-bottom: 8px !important; }
-      .header-spacing { margin-bottom: 4px !important; }
-      header h1 { font-size: 1.75rem !important; }
-      header p { display: none; }
-      .grid-cols-4 article { padding: 6px !important; }
-      .grid-cols-4 svg { width: 48px !important; height: 48px !important; }
-      .grid-cols-4 span.font-space.text-lg { font-size: 1rem !important; }
-      .stats-spacing { gap: 4px !important; margin-bottom: 4px !important; }
-      .stats-spacing .glass-panel { padding: 6px 8px !important; }
-      .stats-spacing .w-8 { width: 24px !important; height: 24px !important; }
+    @media (max-height: 700px) {
+      main { 
+        padding-top: 8px !important; 
+        padding-bottom: calc(8px + env(safe-area-inset-bottom)) !important; 
+        gap: 0 !important;
+      }
+      .header-spacing { margin-bottom: 2px !important; }
+      header h1 { font-size: 1.5rem !important; line-height: 1.1 !important; }
+      header p { display: none !important; }
+      
+      /* Сжимаем блок времени Москвы */
+      div.glass-panel.px-4.py-2\.5 { 
+        padding: 6px 12px !important; 
+        margin-bottom: 4px !important; 
+      }
+      
+      /* Таймеры становятся компактнее */
+      .grid-cols-4 { gap: 4px !important; margin-bottom: 4px !important; }
+      .grid-cols-4 article { padding: 4px !important; border-radius: 14px !important; }
+      .grid-cols-4 svg { width: 40px !important; height: 40px !important; }
+      .grid-cols-4 span.font-space.text-lg { font-size: 0.85rem !important; }
+      .grid-cols-4 span.text-\[8px\] { font-size: 6px !important; margin-top: 1px !important; }
+      
+      /* Настроения */
+      section.mb-3 { margin-bottom: 4px !important; }
+      .grid-cols-4.gap-2 button { padding: 6px 2px !important; }
+      .grid-cols-4.gap-2 span.text-base { font-size: 1rem !important; margin-bottom: 0 !important; }
+      
+      /* Прогресс бар */
+      section.glass-panel.p-4 { padding: 8px 12px !important; gap: 4px !important; margin-bottom: 4px !important; }
+      
+      /* Статистика - максимальное сжатие */
+      .stats-spacing { gap: 3px !important; margin-bottom: 3px !important; }
+      .stats-spacing .glass-panel { padding: 4px 8px !important; gap: 6px !important; }
+      .stats-spacing .w-8 { width: 20px !important; height: 20px !important; min-width: 20px !important; }
+      .stats-spacing .text-\[9px\] { font-size: 7px !important; }
+      .stats-spacing .text-xs { font-size: 10px !important; }
+      
+      /* Цитата - минимум места */
       section[aria-label="Романтическое послание"] { 
-        min-height: 50px !important; 
-        padding: 10px !important; 
-        margin-bottom: 6px !important;
+        min-height: 44px !important; 
+        padding: 8px 10px !important; 
+        margin-bottom: 4px !important;
+      }
+      #quote-display { font-size: 11px !important; line-height: 1.3 !important; }
+            /* Футер гарантированно виден */
+      footer { 
+        padding-top: 2px !important; 
+        gap: 4px !important;
+      }
+      footer .glass-panel { 
+        padding: 3px 8px !important; 
+        font-size: 9px !important; 
       }
     }
   </style>
@@ -194,7 +234,8 @@
         <svg class="w-10 h-10 text-pink-500" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
         </svg>
-      </div>      <h2 class="font-space text-3xl font-bold text-gradient mb-2">Время пришло!</h2>
+      </div>
+      <h2 class="font-space text-3xl font-bold text-gradient mb-2">Время пришло!</h2>
       <p class="text-sm text-white/75 mb-6 leading-relaxed">Каждое мгновение ожидания привело нас сюда. Мы наконец-то вместе.</p>
       <button onclick="resetCelebration()" class="px-6 py-2.5 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 hover:brightness-110 transition text-xs font-bold tracking-wider uppercase font-space shadow-lg">Закрыть окно</button>
     </div>
@@ -202,8 +243,7 @@
 
   <!-- MEMORY CAPTURE OVERLAY -->
   <div id="memory-overlay" class="fixed inset-0 z-50 hidden flex-col items-center justify-center p-6 bg-black/80 backdrop-blur-xl opacity-0 transition-opacity duration-500 pointer-events-none">
-    <div class="relative w-full max-w-[320px] aspect-[3/4] glass-panel border border-white/10 shadow-2xl overflow-hidden transform scale-95 transition-transform duration-500 cubic-bezier(0.34, 1.56, 0.64, 1)">
-      <div class="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-10 pointer-events-none bg-[length:100%_2px,3px_100%]"></div>
+    <div class="relative w-full max-w-[320px] aspect-[3/4] glass-panel border border-white/10 shadow-2xl overflow-hidden transform scale-95 transition-transform duration-500 cubic-bezier(0.34, 1.56, 0.64, 1)">      <div class="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-10 pointer-events-none bg-[length:100%_2px,3px_100%]"></div>
       <div class="absolute inset-0 flex flex-col items-center justify-center p-8 text-center z-20">
         <p id="mem-quote" class="text-lg font-medium italic text-white/90 leading-relaxed mb-8 line-clamp-4">...</p>
         <div class="flex flex-col items-center gap-1 mb-8">
@@ -243,6 +283,7 @@
       <h1 class="font-space text-3xl md:text-4xl font-bold tracking-tight text-gradient leading-none mb-1">До встречи</h1>
       <p class="text-white/40 text-[11px] tracking-wider uppercase font-space">В бесконечности времени и любви</p>
     </header>
+
     <!-- MOSCOW TIME BAR -->
     <div class="w-full glass-panel px-4 py-2.5 flex items-center justify-between mb-3 shrink-0">
       <div class="flex items-center gap-2 text-white/50 text-xs">
@@ -251,8 +292,7 @@
         </svg>
         <span class="tracking-wide text-white/70 font-medium text-[11px]">ВРЕМЯ В МОСКВЕ</span>
       </div>
-      <div class="font-space font-bold text-xs tracking-widest text-white bg-white/[0.04] py-1 px-3 rounded-full border border-white/[0.05]" id="msk-clock">00:00:00</div>
-    </div>
+      <div class="font-space font-bold text-xs tracking-widest text-white bg-white/[0.04] py-1 px-3 rounded-full border border-white/[0.05]" id="msk-clock">00:00:00</div>    </div>
 
     <!-- COUNTDOWN GRID -->
     <section class="grid grid-cols-4 gap-2.5 mb-3 shrink-0" role="timer" aria-label="Таймер">
@@ -292,7 +332,8 @@
     <!-- MOOD SELECTOR -->
     <section class="mb-3 shrink-0">
       <div class="glass-panel p-3 flex flex-col gap-2">
-        <div class="flex justify-between items-center text-[10px] tracking-widest font-space font-bold text-white/35 uppercase">          <span>Связать настроения</span>
+        <div class="flex justify-between items-center text-[10px] tracking-widest font-space font-bold text-white/35 uppercase">
+          <span>Связать настроения</span>
           <span class="text-[rgb(var(--accent-rgb))]">Наш резонанс</span>
         </div>
         <div class="grid grid-cols-4 gap-2">
@@ -300,8 +341,7 @@
             <span class="block text-base mb-0.5">🥺</span>
             <span class="text-[8px] font-space text-white/60 uppercase tracking-wider font-semibold">Скучаю</span>
           </button>
-          <button onclick="setMood('love')" id="mood-love" class="glass-panel-interactive py-2 px-1 text-center rounded-xl bg-white/[0.02] border border-white/[0.05] transition-all ring-1 ring-[rgba(var(--accent-rgb),0.6)] bg-white/[0.1]">
-            <span class="block text-base mb-0.5">❤️</span>
+          <button onclick="setMood('love')" id="mood-love" class="glass-panel-interactive py-2 px-1 text-center rounded-xl bg-white/[0.02] border border-white/[0.05] transition-all ring-1 ring-[rgba(var(--accent-rgb),0.6)] bg-white/[0.1]">            <span class="block text-base mb-0.5">❤️</span>
             <span class="text-[8px] font-space text-white/60 uppercase tracking-wider font-semibold">Люблю</span>
           </button>
           <button onclick="setMood('dream')" id="mood-dream" class="glass-panel-interactive py-2 px-1 text-center rounded-xl bg-white/[0.02] border border-white/[0.05] transition-all opacity-70">
@@ -341,7 +381,8 @@
       <div class="flex flex-col gap-2">
         <div class="glass-panel px-3 py-2 flex items-center gap-3 bg-white/[0.01]">
           <div class="w-8 h-8 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-500">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>          </div>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
           <div class="min-w-0"><span class="block text-[9px] text-white/30 uppercase tracking-wider font-space">Всего часов</span><span class="block font-space text-xs font-bold text-white/90 truncate" id="stat-hours">0</span></div>
         </div>
         <div class="glass-panel px-3 py-2 flex items-center gap-3 bg-white/[0.01]">
@@ -349,8 +390,7 @@
             <svg class="w-4 h-4 animate-pulse" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
           </div>
           <div class="min-w-0"><span class="block text-[9px] text-white/30 uppercase tracking-wider font-space">Удары сердца</span><span class="block font-space text-xs font-bold text-white/90 truncate" id="stat-hearts">0</span></div>
-        </div>
-      </div>
+        </div>      </div>
       <div class="flex flex-col gap-2">
         <div class="glass-panel px-3 py-2 flex items-center gap-3 bg-white/[0.01]">
           <div class="w-8 h-8 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-500">
@@ -390,7 +430,8 @@
     </section>
 
     <!-- FOOTER -->
-    <footer class="w-full flex items-center justify-between gap-2 mt-auto pt-1 pb-safe shrink-0">      <div class="flex items-center gap-1.5 py-1 px-2.5 rounded-full glass-panel bg-white/[0.02] text-[10px] whitespace-nowrap">
+    <footer class="w-full flex items-center justify-between gap-2 mt-auto pt-1 pb-safe shrink-0">
+      <div class="flex items-center gap-1.5 py-1 px-2.5 rounded-full glass-panel bg-white/[0.02] text-[10px] whitespace-nowrap">
         <svg class="w-3 h-3 text-emerald-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
         <span class="text-white/40 font-space uppercase tracking-wider">Пройдено: <strong class="text-emerald-400 font-bold ml-0.5" id="days-passed-badge">0</strong>дн.</span>
       </div>
@@ -399,7 +440,6 @@
         <span class="text-white/50 font-space font-medium tracking-wide">23.07.26 20:49 МСК</span>
       </div>
     </footer>
-
   </main>
 
   <script>
@@ -439,7 +479,8 @@
 
     /* ===== STATE ===== */
     let activeMood = 'love';
-    let currentQuoteIndex = 0;    let quoteTimer = 0;
+    let currentQuoteIndex = 0;
+    let quoteTimer = 0;
     const quoteInterval = 9000;
     window.lastMoodChange = Date.now();
 
@@ -447,8 +488,7 @@
     const MOOD_THEMES = {
       miss: {
         primary: '255, 99, 132',
-        secondary: '190, 24, 93',
-        status: 'СВЯЗЬ АКТИВНА • СКУЧАЮ',
+        secondary: '190, 24, 93',        status: 'СВЯЗЬ АКТИВНА • СКУЧАЮ',
         orbIntensity: 0.22
       },
       love: {
@@ -488,7 +528,8 @@
       statMinutes: document.getElementById('stat-minutes'),
       statHearts: document.getElementById('stat-hearts'),
       quoteDisplay: document.getElementById('quote-display'),
-      quoteTimerLine: document.getElementById('quote-timer-line'),      daysPassedBadge: document.getElementById('days-passed-badge'),
+      quoteTimerLine: document.getElementById('quote-timer-line'),
+      daysPassedBadge: document.getElementById('days-passed-badge'),
       appStatus: document.getElementById('app-status'),
       loader: document.getElementById('loader'),
       celebrationOverlay: document.getElementById('celebration-overlay')
@@ -496,8 +537,7 @@
 
     /* ===== CANVAS PARTICLES ===== */
     const canvas = document.getElementById('particle-canvas');
-    const ctx = canvas.getContext('2d');
-    let stars = [];
+    const ctx = canvas.getContext('2d');    let stars = [];
     let heartWaves = [];
     
     function resizeCanvas() {
@@ -537,7 +577,8 @@
         this.targetScale = Math.random() * 1.4 + 0.8;
         this.opacity = 1;
         this.angle = Math.random() * Math.PI * 2;
-        this.speed = Math.random() * 3 + 1.5;        this.vx = Math.cos(this.angle) * this.speed;
+        this.speed = Math.random() * 3 + 1.5;
+        this.vx = Math.cos(this.angle) * this.speed;
         this.vy = Math.sin(this.angle) * this.speed - 1.0;
         this.rot = Math.random() * 0.2 - 0.1;
         this.rotation = 0;
@@ -545,8 +586,7 @@
       }
       update() {
         this.x += this.vx; this.y += this.vy;
-        this.scale += (this.targetScale - this.scale) * 0.1;
-        this.rotation += this.rot;
+        this.scale += (this.targetScale - this.scale) * 0.1;        this.rotation += this.rot;
         this.opacity -= 0.018;
       }
       draw() {
@@ -586,7 +626,8 @@
     requestAnimationFrame(animateParticles);
 
     /* ===== MEMORY CAPTURE SYSTEM ===== */
-    const memOverlay = document.getElementById('memory-overlay');    const memEls = {
+    const memOverlay = document.getElementById('memory-overlay');
+    const memEls = {
       quote: document.getElementById('mem-quote'),
       timer: document.getElementById('mem-timer'),
       mood: document.getElementById('mem-mood'),
@@ -594,8 +635,7 @@
     };
 
     function captureMoment(e) {
-      const touchX = e.clientX || (window.innerWidth / 2);
-      const touchY = e.clientY || (window.innerHeight * 0.6);
+      const touchX = e.clientX || (window.innerWidth / 2);      const touchY = e.clientY || (window.innerHeight * 0.6);
       for (let i = 0; i < 8; i++) heartWaves.push(new HeartWave(touchX, touchY));
       
       try { navigator.vibrate?.([15, 30, 15]); } catch(err) {}
@@ -635,7 +675,8 @@
         if (targetEl) {
           if (k === moodKey) {
             targetEl.classList.add('ring-1', 'ring-[rgba(var(--accent-rgb),0.6)]', 'bg-white/[0.1]');
-            targetEl.classList.remove('opacity-70');          } else {
+            targetEl.classList.remove('opacity-70');
+          } else {
             targetEl.classList.remove('ring-1', 'ring-[rgba(var(--accent-rgb),0.6)]', 'bg-white/[0.1]');
             targetEl.classList.add('opacity-70');
           }
@@ -643,8 +684,7 @@
       });
 
       const theme = MOOD_THEMES[moodKey];
-      document.documentElement.style.setProperty('--accent-rgb', theme.primary);
-      document.documentElement.style.setProperty('--accent-secondary-rgb', theme.secondary);
+      document.documentElement.style.setProperty('--accent-rgb', theme.primary);      document.documentElement.style.setProperty('--accent-secondary-rgb', theme.secondary);
 
       const orb1 = document.getElementById('glow-orb-1');
       const orb2 = document.getElementById('glow-orb-2');
@@ -684,6 +724,7 @@
       try {
         const now = new Date();
         const remainingTime = TARGET_DATE - now;
+
         const mskTime = new Date(now.getTime() + 3 * 3600000);
         el.mskClock.textContent = formatNumber(mskTime.getUTCHours()) + ":" + formatNumber(mskTime.getUTCMinutes()) + ":" + formatNumber(mskTime.getUTCSeconds());
 
@@ -692,8 +733,7 @@
           el.celebrationOverlay.classList.add('flex');
           setCountdownValues(0, 0, 0, 0);
           updateRadialProgressRings(0, 0, 0, 0);
-          el.precisePct.textContent = "100.000000%";
-          el.progressFill.style.width = "100%";
+          el.precisePct.textContent = "100.000000%";          el.progressFill.style.width = "100%";
           return;
         }
 
@@ -733,7 +773,8 @@
       setRingOffset(el.ringD, (d % 100) / 100);
       setRingOffset(el.ringH, h / 24);
       setRingOffset(el.ringM, m / 60);
-      setRingOffset(el.ringS, s / 60);    }
+      setRingOffset(el.ringS, s / 60);
+    }
 
     function setRingOffset(element, fraction) {
       if (!element) return;
@@ -741,8 +782,7 @@
     }
 
     function resetCelebration() {
-      el.celebrationOverlay.classList.add('hidden');
-      el.celebrationOverlay.classList.remove('flex');
+      el.celebrationOverlay.classList.add('hidden');      el.celebrationOverlay.classList.remove('flex');
     }
 
     /* ===== QUOTE ROTATOR ===== */
@@ -782,7 +822,8 @@
         displayNextQuote();
         setInterval(updateQuoteProgressLine, 50);
 
-      } catch (error) {        console.error("Init error:", error);
+      } catch (error) {
+        console.error("Init error:", error);
         if (el.loader) el.loader.remove();
       }
     }
@@ -790,5 +831,4 @@
     if (document.readyState !== 'loading') initializeApp();
     else document.addEventListener('DOMContentLoaded', initializeApp);
   </script>
-</body>
-</html>
+</body></html>

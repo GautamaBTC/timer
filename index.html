@@ -3,760 +3,962 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>До встречи</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='38' fill='none' stroke='%23fb7185' stroke-width='4'/><circle cx='50' cy='50' r='4' fill='%23a78bfa'/><line x1='50' y1='50' x2='50' y2='22' stroke='%23fb7185' stroke-width='3.5' stroke-linecap='round'/><line x1='50' y1='50' x2='72' y2='50' stroke='%23a78bfa' stroke-width='3.5' stroke-linecap='round'/></svg>">
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&display=swap" rel="stylesheet">
+  <title>До встречи | Сквозь пространство и время</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='38' fill='none' stroke='%23ff2a5f' stroke-width='4'/><path d='M50 32 C42 18, 20 22, 35 46 L50 65 L65 46 C80 22, 58 18, 50 32 Z' fill='%23ff2a5f'/></svg>">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind Browser CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
   <style>
-    /* ===== DESIGN TOKENS ===== */
+    /* ===== THEME VARIABLES (DYNAMIC VIA JS) ===== */
     :root {
-      --bg: #09090b;
-      --surface: rgba(255,255,255,0.03);
-      --surface-2: rgba(255,255,255,0.055);
-      --border: rgba(255,255,255,0.055);
-      --text: #fafafa;
-      --text-2: rgba(255,255,255,0.58);
-      --text-3: rgba(255,255,255,0.32);
-      --rose: #fb7185;
-      --violet: #a78bfa;
-      --cyan: #67e8f9;
-      --amber: #fbbf24;
-      --emerald: #34d399;
+      --accent-rgb: 255, 42, 95;      /* Red-Rose (Default) */
+      --accent-glow: rgba(255, 42, 95, 0.15);
+      --accent-secondary-rgb: 139, 92, 246; /* Violet */
+      
+      --bg-color: #07070a;
+      --card-bg: rgba(13, 13, 20, 0.45);
+      --card-bg-hover: rgba(20, 20, 30, 0.6);
+      --card-border: rgba(255, 255, 255, 0.05);
+      
+      --font-space: 'Space Grotesk', sans-serif;
+      --font-plus: 'Plus Jakarta Sans', sans-serif;
     }
 
-    /* ===== REDUCED MOTION ===== */
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
-      .particle, .ambient { display: none !important; }
+    /* ===== SMOOTH TRANSITIONS ===== */
+    * {
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    /* ===== RESET ===== */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-    body {
-      min-height: 100dvh;
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      line-height: 1.5;
-      overflow-x: hidden;
+    /* ===== STRICT SCROLLBAR ELIMINATION ===== */
+    html, body {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-color);
+      color: #f4f4f7;
+      font-family: var(--font-plus);
     }
 
-    /* ===== AMBIENT BACKGROUND ===== */
-    .ambient {
-      position: fixed; inset: 0; z-index: 0;
-      pointer-events: none; overflow: hidden;
-    }
-    .orb {
-      position: absolute; border-radius: 50%;
-      filter: blur(90px); will-change: transform;
-    }
-    .orb-1 {
-      width: 320px; height: 320px; top: -100px; left: -80px;
-      background: rgba(251,113,133,0.1);
-      animation: drift 22s ease-in-out infinite;
-    }
-    .orb-2 {
-      width: 280px; height: 280px; bottom: 5%; right: -100px;
-      background: rgba(167,139,250,0.09);
-      animation: drift 28s ease-in-out infinite reverse;
-    }
-    .orb-3 {
-      width: 200px; height: 200px; bottom: 35%; left: 15%;
-      background: rgba(103,232,249,0.05);
-      animation: drift 32s ease-in-out infinite 5s;
-    }
-    @keyframes drift {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      25% { transform: translate(30px, -25px) scale(1.05); }
-      50% { transform: translate(-25px, 35px) scale(0.95); }
-      75% { transform: translate(25px, 20px) scale(1.02); }
-    }
-
-    /* ===== LOADER ===== */
-    .loader {
-      position: fixed; inset: 0; z-index: 100;
-      display: flex; align-items: center; justify-content: center;
-      background: var(--bg);
-      transition: opacity 0.6s ease, visibility 0.6s ease;
-    }
-    .loader.hide { opacity: 0; visibility: hidden; pointer-events: none; }
-    .spinner {
-      width: 44px; height: 44px;
-      animation: spin 1s linear infinite;
-    }
-    .spinner circle { fill: none; stroke-width: 3; stroke-linecap: round; }
-    .spinner .sp-track { stroke: rgba(255,255,255,0.06); }
-    .spinner .sp-fill { stroke: var(--rose); stroke-dasharray: 90 40; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ===== COMPLETION OVERLAY ===== */
-    .overlay {
-      position: fixed; inset: 0; z-index: 50;
-      display: none; align-items: center; justify-content: center;
-      text-align: center; padding: 24px;
-      background: rgba(9,9,11,0.92);
-      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-    }
-    .overlay.active { display: flex; }
-    .overlay-heart {
-      width: 72px; height: 72px; margin: 0 auto 20px;
-      color: var(--rose); animation: heartpulse 1.2s ease-in-out infinite;
-    }
-    .overlay h2 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.9rem; font-weight: 700; letter-spacing: -0.02em;
-      background: linear-gradient(135deg, var(--rose), var(--amber), var(--rose));
-      background-size: 200% 200%;
-      -webkit-background-clip: text; background-clip: text; color: transparent;
-      animation: flow 3s ease-in-out infinite;
-    }
-    .overlay p { color: var(--text-2); margin-top: 8px; font-size: 0.9rem; }
-    @keyframes heartpulse {
-      0%, 100% { transform: scale(1); }
-      14% { transform: scale(1.18); }
-      28% { transform: scale(1); }
-      42% { transform: scale(1.12); }
-    }
-
-    /* ===== MAIN APP ===== */
-    .app {
-      position: relative; z-index: 1;
-      max-width: 430px; margin: 0 auto;
-      padding: 24px 16px 48px;
-      min-height: 100dvh;
-    }
-
-    /* ===== HEADER ===== */
-    .header { text-align: center; margin-bottom: 28px; }
-    .status-pill {
-      display: inline-flex; align-items: center; gap: 7px;
-      padding: 5px 14px;
-      background: var(--surface-2); border: 1px solid var(--border);
-      border-radius: 99px;
-      font-size: 0.65rem; font-weight: 500; color: var(--text-3);
-      letter-spacing: 0.1em; text-transform: uppercase;
-    }
-    .live-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--emerald);
-      box-shadow: 0 0 8px rgba(52,211,153,0.6);
-      animation: pulse 2s ease-in-out infinite;
-    }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
-
-    .header h1 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 2rem; font-weight: 700; letter-spacing: -0.04em;
-      margin-top: 14px;
-      background: linear-gradient(135deg, var(--text) 0%, var(--rose) 50%, var(--text) 100%);
-      background-size: 200% 200%;
-      -webkit-background-clip: text; background-clip: text; color: transparent;
-      animation: flow 6s ease-in-out infinite;
-    }
-    @keyframes flow { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
-
-    .header .sub {
-      color: var(--text-3); font-size: 0.82rem; margin-top: 4px;
-    }
-
-    /* ===== TIME BAR ===== */
-    .time-bar {
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      padding: 7px 16px; margin-bottom: 20px;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 12px;
-      font-size: 0.75rem; color: var(--text-3);
-    }
-    .time-bar svg { width: 13px; height: 13px; flex-shrink: 0; }
-    .time-bar strong {
-      color: var(--cyan); font-family: 'Space Grotesk', sans-serif; font-weight: 500;
-    }
-
-    /* ===== COUNTDOWN GRID ===== */
-    .cd-grid {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 12px; margin-bottom: 14px;
-    }
-    .cd-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 20px 10px 14px;
-      display: flex; flex-direction: column; align-items: center;
-      position: relative; overflow: hidden;
-    }
-    .cd-card::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, var(--accent), transparent);
-      opacity: 0.5;
-    }
-    .cd-card::after {
-      content: ''; position: absolute; inset: 0;
-      background: radial-gradient(ellipse at 50% 0%, var(--glow) 0%, transparent 70%);
+    /* ===== PREMIUM CANVAS LAYER ===== */
+    #particle-canvas {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
       pointer-events: none;
+      opacity: 0.85;
     }
-    .cd-card--rose { --accent: var(--rose); --glow: rgba(251,113,133,0.04); }
-    .cd-card--violet { --accent: var(--violet); --glow: rgba(167,139,250,0.04); }
-    .cd-card--cyan { --accent: var(--cyan); --glow: rgba(103,232,249,0.04); }
-    .cd-card--amber { --accent: var(--amber); --glow: rgba(251,191,36,0.04); }
 
-    .cd-ring-wrap {
-      position: relative; width: 90px; height: 90px; margin-bottom: 8px;
+    /* ===== Glassmorphism Styles ===== */
+    .glass-panel {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
     }
-    .cd-ring-svg {
-      position: absolute; inset: 0; width: 100%; height: 100%;
+
+    .glass-panel-interactive {
+      cursor: pointer;
+      will-change: transform, box-shadow;
+      transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .glass-panel-interactive:active {
+      transform: scale(0.97);
+      background: rgba(255, 255, 255, 0.06);
+    }
+    @media (hover: hover) {
+      .glass-panel-interactive:hover {
+        transform: translateY(-2px);
+        background: var(--card-bg-hover);
+        border-color: rgba(var(--accent-rgb), 0.25);
+        box-shadow: 0 12px 40px 0 rgba(var(--accent-rgb), 0.08);
+      }
+    }
+
+    /* ===== DYNAMIC HIGHLIGHT GRADIENT ===== */
+    .text-gradient {
+      background: linear-gradient(135deg, rgb(255, 255, 255) 10%, rgba(var(--accent-rgb), 1) 60%, rgba(var(--accent-secondary-rgb), 1) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* ===== GLOW ELEMENT ===== */
+    .neon-glow {
+      box-shadow: 0 0 25px rgba(var(--accent-rgb), 0.3);
+    }
+
+    /* ===== RADIAL PROGRESS TIMERS ===== */
+    .svg-ring {
       transform: rotate(-90deg);
+      transform-origin: 50% 50%;
     }
-    .cd-ring-svg .rbg { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 3.5; }
-    .cd-ring-svg .rfg {
-      fill: none; stroke: var(--accent); stroke-width: 3.5;
-      stroke-linecap: round; transition: stroke-dashoffset 0.5s cubic-bezier(0.4,0,0.2,1);
-      filter: drop-shadow(0 0 6px var(--accent));
+    .svg-ring-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.03);
+      stroke-width: 3;
     }
-    .cd-val {
-      position: absolute; inset: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.65rem; font-weight: 700;
-      color: var(--text); user-select: none;
-    }
-    .cd-lbl {
-      font-size: 0.62rem; color: var(--text-3);
-      text-transform: uppercase; letter-spacing: 0.12em; font-weight: 500;
+    .svg-ring-fg {
+      fill: none;
+      stroke: url(#ring-gradient);
+      stroke-width: 3;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.35s linear;
     }
 
-    /* ===== CARD (shared) ===== */
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px; padding: 16px;
-      margin-bottom: 14px;
+    /* ===== HEARTBEAT VIBRANT ANIMATION ===== */
+    @keyframes luxury-heartbeat {
+      0% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(var(--accent-rgb), 0.4)); }
+      14% { transform: scale(1.14); filter: drop-shadow(0 0 25px rgba(var(--accent-rgb), 0.8)); }
+      28% { transform: scale(1.02); filter: drop-shadow(0 0 10px rgba(var(--accent-rgb), 0.5)); }
+      42% { transform: scale(1.09); filter: drop-shadow(0 0 18px rgba(var(--accent-rgb), 0.7)); }
+      70% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(var(--accent-rgb), 0.4)); }
+    }
+    .animated-heartbeat {
+      animation: luxury-heartbeat 1.8s infinite cubic-bezier(0.215, 0.610, 0.355, 1.000);
     }
 
-    /* ===== PROGRESS ===== */
-    .prog-head {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 12px;
+    /* Custom styles to guarantee no overflow for short screens */
+    @media (max-height: 740px) {
+      .header-spacing { margin-bottom: 8px !important; }
+      .stats-spacing { gap: 6px !important; margin-bottom: 8px !important; }
+      .main-card-padding { padding: 12px !important; }
+      .text-xs-compact { font-size: 0.7rem !important; }
+      .size-compact { height: 48px !important; }
     }
-    .prog-title {
-      display: flex; align-items: center; gap: 8px;
-      color: var(--text-2); font-size: 0.82rem; font-weight: 500;
-    }
-    .prog-title svg { width: 15px; height: 15px; color: var(--violet); flex-shrink: 0; }
-    .prog-pct {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.82rem; font-weight: 700; color: var(--cyan);
-    }
-    .prog-track {
-      width: 100%; height: 8px; border-radius: 99px;
-      background: rgba(255,255,255,0.05); overflow: hidden;
-    }
-    .prog-fill {
-      height: 100%; width: 0%; border-radius: 99px;
-      background: linear-gradient(90deg, var(--rose), var(--violet), var(--cyan));
-      background-size: 200% 100%;
-      animation: gradient-shift 4s ease infinite;
-      transition: width 0.7s cubic-bezier(0.4,0,0.2,1);
-      position: relative; overflow: hidden;
-    }
-    .prog-fill::after {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%);
-      animation: shimmer 2.5s ease-in-out infinite;
-    }
-    @keyframes gradient-shift { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
-    @keyframes shimmer { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
-
-    .prog-dates {
-      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px;
-      margin-top: 10px; font-size: 0.65rem; color: var(--text-3);
-    }
-    .prog-dates b { color: var(--text-2); font-weight: 500; }
-
-    /* ===== STATS GRID ===== */
-    .stats {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 10px; margin-bottom: 14px;
-    }
-    .st-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 16px; padding: 13px 12px;
-      display: flex; align-items: center; gap: 11px;
-    }
-    .st-icon {
-      width: 36px; height: 36px; border-radius: 10px;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
-    .st-icon svg { width: 17px; height: 17px; }
-    .st-icon--rose { background: rgba(251,113,133,0.1); color: var(--rose); }
-    .st-icon--violet { background: rgba(167,139,250,0.1); color: var(--violet); }
-    .st-icon--cyan { background: rgba(103,232,249,0.1); color: var(--cyan); }
-    .st-icon--amber { background: rgba(251,191,36,0.1); color: var(--amber); }
-
-    .st-body { min-width: 0; }
-    .st-val {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.95rem; font-weight: 700; color: var(--text); line-height: 1.2;
-    }
-    .st-lbl {
-      font-size: 0.6rem; color: var(--text-3);
-      text-transform: uppercase; letter-spacing: 0.08em; margin-top: 1px;
-    }
-
-    /* ===== QUOTE ===== */
-    .quote-card {
-      text-align: center; position: relative; padding: 28px 20px 24px;
-    }
-    .quote-mark {
-      position: absolute; top: 10px; left: 14px;
-      width: 22px; height: 22px; color: rgba(255,255,255,0.05);
-    }
-    .quote-text {
-      font-style: italic; color: var(--text-2); font-size: 0.88rem; line-height: 1.65;
-      transition: opacity 0.35s ease, transform 0.35s ease;
-      min-height: 3.3em;
-    }
-    .quote-text.hide { opacity: 0; transform: translateY(6px); }
-
-    /* ===== FOOTER ===== */
-    .footer {
-      display: flex; flex-direction: column; align-items: center;
-      gap: 10px; margin-top: 4px;
-    }
-    .pill {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 7px 16px; border-radius: 99px;
-      font-size: 0.68rem; font-weight: 500; letter-spacing: 0.01em;
-    }
-    .pill svg { width: 13px; height: 13px; flex-shrink: 0; }
-    .pill--ghost {
-      background: var(--surface); border: 1px solid var(--border);
-      color: var(--text-2);
-    }
-    .pill--ghost b {
-      color: var(--emerald); font-family: 'Space Grotesk', sans-serif; font-weight: 700;
-    }
-    .pill--glow {
-      background: linear-gradient(135deg, rgba(251,113,133,0.08), rgba(167,139,250,0.08));
-      border: 1px solid rgba(251,113,133,0.12);
-      color: var(--rose); font-family: 'Space Grotesk', sans-serif; font-weight: 500;
-    }
-
-    /* ===== PARTICLES ===== */
-    .particle {
-      position: fixed; border-radius: 50%;
-      pointer-events: none; z-index: 0;
-      will-change: transform, opacity;
-      animation: floatup var(--dur) linear forwards;
-    }
-    .particle--heart {
-      border-radius: 0; opacity: 0;
-      animation: floatup var(--dur) linear forwards;
-    }
-    @keyframes floatup {
-      0% { transform: translateY(0) scale(0); opacity: 0; }
-      8% { opacity: var(--op, 0.35); transform: translateY(-5vh) scale(1); }
-      100% { opacity: 0; transform: translateY(-110vh) scale(0.3); }
-    }
-
-    /* ===== SVG ICON HELPERS ===== */
-    .icon { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .icon-fill { fill: currentColor; stroke: none; }
   </style>
 </head>
 <body>
 
-  <!-- Ambient background -->
-  <div class="ambient" aria-hidden="true">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
+  <!-- HTML5 Canvas Background Particle Engine -->
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- Ambient radial light sources -->
+  <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
+    <div id="glow-orb-1" class="absolute rounded-full filter blur-[120px] opacity-30 transition-all duration-1000 ease-in-out" style="width: 400px; height: 400px; top: -10%; left: -10%; background: rgba(var(--accent-rgb), 0.12);"></div>
+    <div id="glow-orb-2" class="absolute rounded-full filter blur-[120px] opacity-20 transition-all duration-1000 ease-in-out" style="width: 350px; height: 350px; bottom: -5%; right: -10%; background: rgba(var(--accent-secondary-rgb), 0.12);"></div>
   </div>
 
-  <!-- Loader -->
-  <div class="loader" id="loader" role="status" aria-label="Загрузка">
-    <svg viewBox="0 0 50 50" class="spinner">
-      <circle cx="25" cy="25" r="20" class="sp-track"/>
-      <circle cx="25" cy="25" r="20" class="sp-fill"/>
-    </svg>
+  <!-- PRELOADER -->
+  <div id="loader" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#07070a] transition-all duration-700">
+    <div class="relative flex items-center justify-center mb-6">
+      <!-- Outer pulsating ring -->
+      <div class="absolute w-20 h-20 rounded-full border-2 border-pink-500/20 animate-ping"></div>
+      <!-- Custom heart loader -->
+      <svg class="w-12 h-12 text-pink-500 animate-pulse" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+      </svg>
+    </div>
+    <span class="text-xs uppercase tracking-[0.25em] font-medium text-white/40 font-space animate-pulse">Синхронизация времени...</span>
   </div>
 
-  <!-- Completion overlay -->
-  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-hidden="true">
-    <div>
-      <div class="overlay-heart">
-        <svg viewBox="0 0 24 24" class="icon" stroke-width="1.5">
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+  <!-- TIMELINE COMPLETION CELEBRATION OVERLAY -->
+  <div id="celebration-overlay" class="fixed inset-0 z-40 hidden flex-col items-center justify-center text-center p-6 bg-[#07070ac7] backdrop-blur-2xl transition-all duration-1000">
+    <div class="glass-panel p-10 max-w-sm border-pink-500/30 shadow-2xl flex flex-col items-center">
+      <div class="w-20 h-20 rounded-full bg-pink-500/10 flex items-center justify-center border border-pink-500/40 mb-6 animate-bounce">
+        <svg class="w-10 h-10 text-pink-500" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
         </svg>
       </div>
-      <h2>Время пришло!</h2>
-      <p>Момент, которого мы ждали, наступил</p>
+      <h2 class="font-space text-3xl font-bold text-gradient mb-2">Время пришло!</h2>
+      <p class="text-sm text-white/75 mb-6 leading-relaxed">Каждое мгновение ожидания, каждая преодоленная секунда привела нас сюда. Мы наконец-то вместе.</p>
+      <button onclick="resetCelebration()" class="px-6 py-2.5 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 hover:brightness-110 transition text-xs font-bold tracking-wider uppercase font-space shadow-lg">Закрыть окно</button>
     </div>
   </div>
 
-  <!-- Main app -->
-  <main class="app">
-    <header class="header">
-      <div class="status-pill">
-        <span class="live-dot" aria-hidden="true"></span>
-        <span>Прямой эфир</span>
+  <!-- MAIN CONTAINER APP -->
+  <main class="relative z-10 w-full h-full flex flex-col justify-between px-4 py-6 md:py-8 max-w-md mx-auto select-none">
+    
+    <!-- HEADER MODULE -->
+    <header class="w-full text-center header-spacing mb-4 flex flex-col items-center">
+      <!-- Top Pill Panel -->
+      <div class="flex items-center justify-between w-full max-w-xs bg-white/[0.02] border border-white/[0.05] rounded-full py-1 px-3 mb-3">
+        <!-- Pulse Dot Status -->
+        <div class="flex items-center gap-2">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[rgb(var(--accent-rgb))] opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-[rgb(var(--accent-rgb))]"></span>
+          </span>
+          <span id="app-status" class="text-[10px] uppercase tracking-widest font-space font-semibold text-white/50">СВЯЗЬ АКТИВНА</span>
+        </div>
+
+        <!-- Interactive Pure Audio Synth Toggle Button -->
+        <button onclick="toggleHeartSynth()" id="audio-toggle" class="flex items-center gap-1.5 text-white/40 hover:text-[rgb(var(--accent-rgb))] transition-colors py-0.5 px-2 rounded-md bg-white/[0.04] border border-white/5 text-[10px] font-space" title="Синтезатор стука сердца">
+          <svg id="audio-icon" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 9.75L19.5 12m0 0l2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6L4.5 9H1.5v6h3l4.5 3.75V5.25z" />
+          </svg>
+          <span>ЗВУК</span>
+        </button>
       </div>
-      <h1>До встречи</h1>
-      <p class="sub">Каждая секунда приближает нас</p>
+
+      <!-- Modern Clean App Title -->
+      <h1 class="font-space text-3xl md:text-4xl font-bold tracking-tight text-gradient leading-none mb-1">До встречи</h1>
+      <p class="text-white/40 text-[11px] tracking-wider uppercase font-space">В бесконечности времени и любви</p>
     </header>
 
-    <!-- Moscow time -->
-    <div class="time-bar">
-      <svg viewBox="0 0 24 24" class="icon" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-      </svg>
-      <span>МСК <strong id="msk">--:--:--</strong></span>
+    <!-- MOSCOW LIVE TIME SLIDER BAR -->
+    <div class="w-full glass-panel px-4 py-2.5 flex items-center justify-between mb-3">
+      <div class="flex items-center gap-2 text-white/50 text-xs">
+        <svg class="w-4 h-4 text-[rgb(var(--accent-rgb))] animate-spin-slow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" stroke-dasharray="6 4"/>
+        </svg>
+        <span class="tracking-wide text-white/70 font-medium text-[11px]">ВРЕМЯ В МОСКВЕ</span>
+      </div>
+      <div class="font-space font-bold text-xs tracking-widest text-white bg-white/[0.04] py-1 px-3 rounded-full border border-white/[0.05]" id="msk-clock">
+        00:00:00
+      </div>
     </div>
 
-    <!-- Countdown -->
-    <section class="cd-grid" role="timer" aria-label="Обратный отсчёт">
+    <!-- MAIN COUNTDOWN GRID (CIRCULAR TIMERS) -->
+    <section class="grid grid-cols-4 gap-2.5 mb-3" role="timer" aria-label="Высокоточный таймер">
+      
       <!-- Days -->
-      <article class="cd-card cd-card--rose">
-        <div class="cd-ring-wrap">
-          <svg viewBox="0 0 100 100" class="cd-ring-svg" aria-hidden="true">
-            <circle cx="50" cy="50" r="42" class="rbg"/>
-            <circle cx="50" cy="50" r="42" class="rfg" id="rd" stroke-dasharray="263.89" stroke-dashoffset="263.89"/>
+      <article class="glass-panel p-2.5 flex flex-col items-center justify-between relative overflow-hidden">
+        <div class="relative w-16 h-16 flex items-center justify-center">
+          <svg class="absolute inset-0 w-full h-full svg-ring" viewBox="0 0 100 100">
+            <defs>
+              <linearGradient id="ring-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="rgba(var(--accent-rgb), 1)" />
+                <stop offset="100%" stop-color="rgba(var(--accent-secondary-rgb), 1)" />
+              </linearGradient>
+            </defs>
+            <circle cx="50" cy="50" r="44" class="svg-ring-bg"/>
+            <circle cx="50" cy="50" r="44" class="svg-ring-fg" id="ring-d" stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
           </svg>
-          <div class="cd-val" id="d">000</div>
+          <span class="font-space text-lg font-bold tracking-tighter text-white" id="display-d">000</span>
         </div>
-        <div class="cd-lbl">дней</div>
+        <span class="text-[8px] font-bold uppercase tracking-[0.15em] text-white/30 mt-2 font-space">Дней</span>
       </article>
+
       <!-- Hours -->
-      <article class="cd-card cd-card--violet">
-        <div class="cd-ring-wrap">
-          <svg viewBox="0 0 100 100" class="cd-ring-svg" aria-hidden="true">
-            <circle cx="50" cy="50" r="42" class="rbg"/>
-            <circle cx="50" cy="50" r="42" class="rfg" id="rh" stroke-dasharray="263.89" stroke-dashoffset="263.89"/>
+      <article class="glass-panel p-2.5 flex flex-col items-center justify-between relative overflow-hidden">
+        <div class="relative w-16 h-16 flex items-center justify-center">
+          <svg class="absolute inset-0 w-full h-full svg-ring" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="44" class="svg-ring-bg"/>
+            <circle cx="50" cy="50" r="44" class="svg-ring-fg" id="ring-h" stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
           </svg>
-          <div class="cd-val" id="h">00</div>
+          <span class="font-space text-lg font-bold tracking-tighter text-white" id="display-h">00</span>
         </div>
-        <div class="cd-lbl">часов</div>
+        <span class="text-[8px] font-bold uppercase tracking-[0.15em] text-white/30 mt-2 font-space">Часов</span>
       </article>
+
       <!-- Minutes -->
-      <article class="cd-card cd-card--cyan">
-        <div class="cd-ring-wrap">
-          <svg viewBox="0 0 100 100" class="cd-ring-svg" aria-hidden="true">
-            <circle cx="50" cy="50" r="42" class="rbg"/>
-            <circle cx="50" cy="50" r="42" class="rfg" id="rm" stroke-dasharray="263.89" stroke-dashoffset="263.89"/>
+      <article class="glass-panel p-2.5 flex flex-col items-center justify-between relative overflow-hidden">
+        <div class="relative w-16 h-16 flex items-center justify-center">
+          <svg class="absolute inset-0 w-full h-full svg-ring" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="44" class="svg-ring-bg"/>
+            <circle cx="50" cy="50" r="44" class="svg-ring-fg" id="ring-m" stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
           </svg>
-          <div class="cd-val" id="m">00</div>
+          <span class="font-space text-lg font-bold tracking-tighter text-white" id="display-m">00</span>
         </div>
-        <div class="cd-lbl">минут</div>
+        <span class="text-[8px] font-bold uppercase tracking-[0.15em] text-white/30 mt-2 font-space">Минут</span>
       </article>
+
       <!-- Seconds -->
-      <article class="cd-card cd-card--amber">
-        <div class="cd-ring-wrap">
-          <svg viewBox="0 0 100 100" class="cd-ring-svg" aria-hidden="true">
-            <circle cx="50" cy="50" r="42" class="rbg"/>
-            <circle cx="50" cy="50" r="42" class="rfg" id="rs" stroke-dasharray="263.89" stroke-dashoffset="263.89"/>
+      <article class="glass-panel p-2.5 flex flex-col items-center justify-between relative overflow-hidden">
+        <div class="relative w-16 h-16 flex items-center justify-center">
+          <svg class="absolute inset-0 w-full h-full svg-ring" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="44" class="svg-ring-bg"/>
+            <circle cx="50" cy="50" r="44" class="svg-ring-fg" id="ring-s" stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
           </svg>
-          <div class="cd-val" id="s">00</div>
+          <span class="font-space text-lg font-bold tracking-tighter text-white" id="display-s">00</span>
         </div>
-        <div class="cd-lbl">секунд</div>
+        <span class="text-[8px] font-bold uppercase tracking-[0.15em] text-white/30 mt-2 font-space">Секунд</span>
       </article>
+
     </section>
 
-    <!-- Progress -->
-    <section class="card" aria-label="Прогресс ожидания">
-      <div class="prog-head">
-        <div class="prog-title">
-          <svg viewBox="0 0 24 24" class="icon" stroke-width="2">
-            <line x1="18" y1="20" x2="18" y2="4"/><line x1="12" y1="20" x2="12" y2="8"/><line x1="6" y1="20" x2="6" y2="14"/>
-          </svg>
-          <span>Прогресс ожидания</span>
+    <!-- MOOD SELECT PANEL (INTERACTIVE SCENARIO) -->
+    <section class="mb-3">
+      <div class="glass-panel p-3 main-card-padding flex flex-col gap-2">
+        <div class="flex justify-between items-center text-[10px] tracking-widest font-space font-bold text-white/35 uppercase">
+          <span>Связать настроения</span>
+          <span class="text-[rgb(var(--accent-rgb))]">Наш резонанс</span>
         </div>
-        <span class="prog-pct" id="pct">0.0000%</span>
+        <div class="grid grid-cols-4 gap-2">
+          <button onclick="setMood('miss')" id="mood-miss" class="glass-panel-interactive py-2 px-1 text-center rounded-xl bg-white/[0.02] border border-white/[0.05] transition-all">
+            <span class="block text-base mb-0.5">🥺</span>
+            <span class="text-[8px] font-space text-white/60 uppercase tracking-wider font-semibold">Скучаю</span>
+          </button>
+          <button onclick="setMood('love')" id="mood-love" class="glass-panel-interactive py-2 px-1 text-center rounded-xl bg-white/[0.02] border border-white/[0.05] transition-all ring-1 ring-[rgba(var(--accent-rgb),0.4)]">
+            <span class="block text-base mb-0.5">❤️</span>
+            <span class="text-[8px] font-space text-white/60 uppercase tracking-wider font-semibold">Люблю</span>
+          </button>
+          <button onclick="setMood('dream')" id="mood-dream" class="glass-panel-interactive py-2 px-1 text-center rounded-xl bg-white/[0.02] border border-white/[0.05] transition-all">
+            <span class="block text-base mb-0.5">✨</span>
+            <span class="text-[8px] font-space text-white/60 uppercase tracking-wider font-semibold">Мечтаю</span>
+          </button>
+          <button onclick="setMood('warmth')" id="mood-warmth" class="glass-panel-interactive py-2 px-1 text-center rounded-xl bg-white/[0.02] border border-white/[0.05] transition-all">
+            <span class="block text-base mb-0.5">🫂</span>
+            <span class="text-[8px] font-space text-white/60 uppercase tracking-wider font-semibold">Обнял бы</span>
+          </button>
+        </div>
       </div>
-      <div class="prog-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-        <div class="prog-fill" id="fill"></div>
+    </section>
+
+    <!-- CONTINUOUS PROGRESS PANEL WITH MICRO-PERCENTAGE -->
+    <section class="glass-panel p-4 main-card-padding flex flex-col gap-2.5 mb-3">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center gap-2 text-xs text-white/70 font-medium">
+          <svg class="w-4 h-4 text-[rgb(var(--accent-secondary-rgb))]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+          <span>Пройденный путь</span>
+        </div>
+        <!-- High-fidelity fractional display (6 decimals) -->
+        <span class="font-space font-bold text-sm tracking-tight text-[rgb(var(--accent-rgb))]" id="precise-pct">0.000000%</span>
       </div>
-      <div class="prog-dates">
-        <span>Старт: <b>20.03.2026</b></span>
-        <span>Финиш: <b>23.07.2026, 20:49</b></span>
+
+      <!-- Visual Bar Component -->
+      <div class="relative w-full h-2.5 bg-white/[0.03] rounded-full overflow-hidden border border-white/[0.05]">
+        <div id="progress-fill" class="absolute top-0 left-0 h-full rounded-full bg-gradient-to-r from-[rgb(var(--accent-rgb))] via-[rgb(var(--accent-secondary-rgb))] to-[#00f2fe] transition-all duration-[60ms] ease-linear shadow-[0_0_12px_rgba(var(--accent-rgb),0.6)]" style="width: 0%;">
+          <div class="absolute inset-0 bg-white/20 animate-pulse"></div>
+        </div>
+      </div>
+
+      <!-- Epoch Bounds -->
+      <div class="flex justify-between text-[10px] text-white/30 font-space">
+        <div class="flex flex-col">
+          <span>ИНИЦИАЦИЯ</span>
+          <b class="text-white/70 mt-0.5">20.03.2026</b>
+        </div>
+        <div class="flex flex-col items-end">
+          <span>ЗАВЕРШЕНИЕ</span>
+          <b class="text-white/70 mt-0.5">23.07.2026, 20:49</b>
+        </div>
       </div>
     </section>
 
-    <!-- Stats -->
-    <section class="stats" aria-label="Статистика">
-      <article class="st-card">
-        <div class="st-icon st-icon--rose">
-          <svg viewBox="0 0 24 24" class="icon" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-          </svg>
+    <!-- CUMULATIVE REAL-TIME STATS COMPACT WIDGETS -->
+    <section class="grid grid-cols-2 gap-2.5 mb-3 stats-spacing" aria-label="Детализированная статистика">
+      
+      <!-- Hours & Hearts Group -->
+      <div class="flex flex-col gap-2">
+        <!-- Hours -->
+        <div class="glass-panel px-3 py-2 flex items-center gap-3 bg-white/[0.01]">
+          <div class="w-8 h-8 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-500">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <div class="min-w-0">
+            <span class="block text-[9px] text-white/30 uppercase tracking-wider font-space">Всего часов</span>
+            <span class="block font-space text-xs font-bold text-white/90 truncate" id="stat-hours">0</span>
+          </div>
         </div>
-        <div class="st-body">
-          <div class="st-val" id="th">0</div>
-          <div class="st-lbl">Часов</div>
+        <!-- Hearts -->
+        <div class="glass-panel px-3 py-2 flex items-center gap-3 bg-white/[0.01]">
+          <div class="w-8 h-8 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500">
+            <svg class="w-4 h-4 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+          </div>
+          <div class="min-w-0">
+            <span class="block text-[9px] text-white/30 uppercase tracking-wider font-space">Удары сердца</span>
+            <span class="block font-space text-xs font-bold text-white/90 truncate" id="stat-hearts">0</span>
+          </div>
         </div>
-      </article>
-      <article class="st-card">
-        <div class="st-icon st-icon--violet">
-          <svg viewBox="0 0 24 24" class="icon" stroke-width="2">
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-          </svg>
+      </div>
+
+      <!-- Minutes & Interactive thoughts Sent -->
+      <div class="flex flex-col gap-2">
+        <!-- Minutes -->
+        <div class="glass-panel px-3 py-2 flex items-center gap-3 bg-white/[0.01]">
+          <div class="w-8 h-8 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-500">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <div class="min-w-0">
+            <span class="block text-[9px] text-white/30 uppercase tracking-wider font-space">Минут ожидания</span>
+            <span class="block font-space text-xs font-bold text-white/90 truncate" id="stat-minutes">0</span>
+          </div>
         </div>
-        <div class="st-body">
-          <div class="st-val" id="tm">0</div>
-          <div class="st-lbl">Минут</div>
+        <!-- Thoughts Sent (Interactive) -->
+        <div onclick="sendLoveThought(event)" class="glass-panel glass-panel-interactive px-3 py-2 flex items-center gap-3 bg-white/[0.02] border-pink-500/20">
+          <div class="w-8 h-8 rounded-xl bg-rose-500/20 flex items-center justify-center text-rose-400 animated-heartbeat">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+          </div>
+          <div class="min-w-0">
+            <span class="block text-[9px] text-white/40 uppercase tracking-wider font-space font-semibold">Коснись: Мысль</span>
+            <span class="block font-space text-xs font-bold text-[rgb(var(--accent-rgb))] truncate" id="stat-thoughts">0</span>
+          </div>
         </div>
-      </article>
-      <article class="st-card">
-        <div class="st-icon st-icon--cyan">
-          <svg viewBox="0 0 24 24" class="icon" stroke-width="2">
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-          </svg>
-        </div>
-        <div class="st-body">
-          <div class="st-val" id="ts">0</div>
-          <div class="st-lbl">Секунд</div>
-        </div>
-      </article>
-      <article class="st-card">
-        <div class="st-icon st-icon--amber">
-          <svg viewBox="0 0 24 24" class="icon" stroke-width="2">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-          </svg>
-        </div>
-        <div class="st-body">
-          <div class="st-val" id="hb">0</div>
-          <div class="st-lbl">Ударов сердца</div>
-        </div>
-      </article>
+      </div>
+
     </section>
 
-    <!-- Quote -->
-    <section class="card quote-card" aria-label="Цитата">
-      <svg class="quote-mark" viewBox="0 0 24 24" aria-hidden="true">
-        <path class="icon-fill" d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/>
-        <path class="icon-fill" d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/>
-      </svg>
-      <p class="quote-text" id="q">Загрузка...</p>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-      <div class="pill pill--ghost">
-        <svg viewBox="0 0 24 24" class="icon" stroke-width="2">
-          <rect x="3" y="4" width="18" height="18" rx="2"/>
-          <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
-          <line x1="3" y1="10" x2="21" y2="10"/>
+    <!-- HIGH-END DYNAMIC ROMANTIC QUOTE SLIDER WITH SCENIC TIMELINE -->
+    <section class="relative glass-panel p-4 main-card-padding flex flex-col justify-between flex-grow min-h-[90px] mb-3" aria-label="Романтическое послание">
+      <!-- Top elegant quotation design icon -->
+      <div class="absolute top-2.5 right-4 opacity-10 text-white">
+        <svg width="24" height="18" viewBox="0 0 24 18" fill="currentColor">
+          <path d="M0 18h6l4-8V0H0v10h5L3 18H0zm14 0h6l4-8V0h-10v10h5l-2 8z"/>
         </svg>
-        <span>Прошло дней: <b id="daysPassed">0</b></span>
       </div>
-      <div class="pill pill--glow">
-        <svg viewBox="0 0 24 24" class="icon" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+      
+      <!-- Quote text with smooth crossfade -->
+      <p id="quote-display" class="text-[13px] md:text-sm font-medium text-white/90 leading-relaxed italic select-all pr-6 transition-all duration-500 opacity-0 transform translate-y-2">
+        Загрузка откровения...
+      </p>
+
+      <!-- Automatic Quote Rotation Visual Timer Indicator -->
+      <div class="w-full h-[1px] bg-white/5 mt-3 relative">
+        <div id="quote-timer-line" class="absolute top-0 left-0 h-full bg-gradient-to-r from-[rgb(var(--accent-rgb))] to-[rgb(var(--accent-secondary-rgb))] transition-all duration-100 ease-linear" style="width: 0%;"></div>
+      </div>
+    </section>
+
+    <!-- FOOTER BADGES (COMPACT) -->
+    <footer class="w-full flex items-center justify-between mt-auto pt-2">
+      <!-- Total days elapsed badge -->
+      <div class="flex items-center gap-1.5 py-1 px-3 rounded-full glass-panel bg-white/[0.02] text-xs-compact">
+        <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        <span>23.07.2026, 20:49 МСК</span>
+        <span class="text-[10px] text-white/40 font-space uppercase tracking-wider">Уже пройдено: <strong class="text-emerald-400 font-bold ml-1" id="days-passed-badge">0</strong>дн.</span>
+      </div>
+
+      <!-- Direct Target Timestamp Badge -->
+      <div class="flex items-center gap-1.5 py-1 px-3 rounded-full glass-panel bg-white/[0.02] text-xs-compact">
+        <div class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
+        <span class="text-[10px] text-white/50 font-space font-medium tracking-wider">23.07.2026 20:49 МСК</span>
       </div>
     </footer>
+
   </main>
 
+  <!-- SOUND EFFECTS AND LOGIC MODULES -->
   <script>
-    /* ===== CONFIG ===== */
-    const TARGET = new Date(Date.UTC(2026, 6, 23, 17, 49, 0));
-    const START  = new Date(Date.UTC(2026, 2, 20, 0, 0, 0));
-    const TOTAL  = TARGET - START;
-    const CIRC   = 2 * Math.PI * 42; // ≈ 263.89
+    /* ===== CONSTANTS ===== */
+    const TARGET_DATE = new Date(Date.UTC(2026, 6, 23, 17, 49, 0)); // 23.07.2026, 20:49 МСК (UTC+3)
+    const START_DATE  = new Date(Date.UTC(2026, 2, 20, 0, 0, 0));   // 20.03.2026
+    const TOTAL_SPAN  = TARGET_DATE - START_DATE;
+    const RING_CIRCUMFERENCE = 276.46; // 2 * Math.PI * 44
 
-    const QUOTES = [
-      "Расстояние — это просто проверка, как далеко может зайти любовь.",
-      "Я несу тебя в своем сердце. Я никогда не бываю без тебя.",
-      "Ожидание делает встречу еще прекраснее.",
-      "Каждый закат приближает нас на один день к встрече.",
-      "Ты мой сегодня и все мои завтра.",
-      "Лучшее еще впереди.",
-      "Скоро. Совсем скоро. И навсегда.",
-      "Ты стоишь каждой секунды ожидания."
+    /* ===== 25 HIGHLY ROMANTIC SOULFUL PHRASES ===== */
+    const PHRASES = [
+      "Всё, что мне нужно — это знать, что в конце этого длинного пути меня ждёшь ты.",
+      "Расстояние измеряется не скучными километрами, а секундами до наших объятий.",
+      "Ты — моё самое красивое 'скоро' и самое долгожданное в мире 'навсегда'.",
+      "Каждый удар моего сердца неумолимо отсчитывает время до нашей встречи.",
+      "Мы смотрим на разные города, но засыпаем под одним и тем же звёздным небом.",
+      "Ожидание — это хрупкий мост любви, который с каждым рассветом становится всё короче.",
+      "Ты — прекрасная музыка, которая звучит во мне, даже когда весь мир погружён в тишину.",
+      "Засыпать с нежной мыслью о тебе — моя самая любимая и неизменная привычка.",
+      "Моя любовь к тебе не знает преград, часовых поясов и земных расстояний.",
+      "Ты стоишь каждого бесконечного мгновения и каждой секунды этого пути.",
+      "Каждое утро я просыпаюсь с улыбкой, ведь я на целый день ближе к тебе.",
+      "Встреча с тобой — это точка, в которой сошлись все мои самые смелые мечты.",
+      "Когда ты рядом, этот безумный мир обретает свои самые тёплые и нежные краски.",
+      "Сквозь любые мили и метели моё преданное сердце всегда летит в твои ладони.",
+      "Любить тебя на расстоянии — это высокое искусство ценить каждое воспоминание.",
+      "Ты — моё яркое солнце, согревающее душу даже в самые холодные дни разлуки.",
+      "Никакое земное расстояние не способно ослабить священное пламя нашей любви.",
+      "Ты заставляешь моё сердце биться чаще, даже находясь за тысячи долгих километров.",
+      "Скоро мы больше никогда не будем прощаться на холодных вокзалах и в аэропортах.",
+      "Твой нежный голос в трубке — мой самый любимый, родной и исцеляющий звук.",
+      "Самое волшебное в мире — знать, что наше общее счастливое будущее уже решено.",
+      "Время без тебя тянется бесконечно, но оно стремительно несёт меня к тебе.",
+      "Ты — моя тихая и уютная гавань, мой единственный дом и моё бесконечное счастье.",
+      "Каждый день долгого ожидания превратит секунду нашей встречи в великий триумф.",
+      "Мы обязательно встретимся, крепко обнимемся и больше никогда в жизни не отпустим."
     ];
 
-    /* ===== ELEMENT CACHE ===== */
-    const $ = {};
-    function cache() {
-      ["d","h","m","s","rd","rh","rm","rs","msk","fill","pct",
-       "th","tm","ts","hb","q","loader","overlay","daysPassed"
-      ].forEach(id => { $[id] = document.getElementById(id); });
+    /* ===== SYSTEM STATE ===== */
+    let activeMood = 'love';
+    let audioEnabled = false;
+    let audioContext = null;
+    let thoughtsCount = parseInt(localStorage.getItem('thoughts_love_taps') || '128');
+    let currentQuoteIndex = 0;
+    let quoteTimer = 0;
+    const quoteInterval = 9000; // Rotate every 9 seconds
+
+    /* ===== MOOD THEMES DEFINITIONS ===== */
+    const MOOD_THEMES = {
+      miss: {
+        primary: '251, 113, 133',    // Rose-Red
+        secondary: '225, 29, 72',    // Dark Rose
+        gradient: ['rgba(251, 113, 133, 0.12)', 'rgba(225, 29, 72, 0.08)'],
+        status: 'СВЯЗЬ АКТИВНА • СКУЧАЮ'
+      },
+      love: {
+        primary: '244, 63, 94',      // Bright Rose
+        secondary: '139, 92, 246',    // Purple
+        gradient: ['rgba(244, 63, 94, 0.15)', 'rgba(139, 92, 246, 0.12)'],
+        status: 'СВЯЗЬ АКТИВНА • ЛЮБЛЮ'
+      },
+      dream: {
+        primary: '6, 182, 212',      // Cyan
+        secondary: '59, 130, 246',    // Blue
+        gradient: ['rgba(6, 182, 212, 0.12)', 'rgba(59, 130, 246, 0.1)'],
+        status: 'СВЯЗЬ АКТИВНА • МЕЧТАЮ'
+      },
+      warmth: {
+        primary: '245, 158, 11',     // Amber
+        secondary: '239, 68, 68',     // Red
+        gradient: ['rgba(245, 158, 11, 0.12)', 'rgba(239, 68, 68, 0.08)'],
+        status: 'СВЯЗЬ АКТИВНА • ХОЧУ ОБНЯТЬ'
+      }
+    };
+
+    /* ===== ELEMENT SELECTORS ===== */
+    const el = {
+      d: document.getElementById('display-d'),
+      h: document.getElementById('display-h'),
+      m: document.getElementById('display-m'),
+      s: document.getElementById('display-s'),
+      ringD: document.getElementById('ring-d'),
+      ringH: document.getElementById('ring-h'),
+      ringM: document.getElementById('ring-m'),
+      ringS: document.getElementById('ring-s'),
+      mskClock: document.getElementById('msk-clock'),
+      precisePct: document.getElementById('precise-pct'),
+      progressFill: document.getElementById('progress-fill'),
+      statHours: document.getElementById('stat-hours'),
+      statMinutes: document.getElementById('stat-minutes'),
+      statHearts: document.getElementById('stat-hearts'),
+      statThoughts: document.getElementById('stat-thoughts'),
+      quoteDisplay: document.getElementById('quote-display'),
+      quoteTimerLine: document.getElementById('quote-timer-line'),
+      daysPassedBadge: document.getElementById('days-passed-badge'),
+      appStatus: document.getElementById('app-status'),
+      loader: document.getElementById('loader'),
+      celebrationOverlay: document.getElementById('celebration-overlay'),
+      audioToggle: document.getElementById('audio-toggle'),
+      audioIcon: document.getElementById('audio-icon')
+    };
+
+    /* ===== HIGH QUALITY CANVAS STARS SYSTEM ===== */
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+    let heartWaves = [];
+    
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Star {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 1.5 + 0.5;
+        this.speedY = -(Math.random() * 0.2 + 0.05);
+        this.opacity = Math.random() * 0.6 + 0.2;
+        this.blinkSpeed = Math.random() * 0.01 + 0.005;
+      }
+      update() {
+        this.y += this.speedY;
+        if (this.y < -10) {
+          this.y = canvas.height + 10;
+          this.x = Math.random() * canvas.width;
+        }
+        this.opacity += this.blinkSpeed;
+        if (this.opacity > 0.85 || this.opacity < 0.15) {
+          this.blinkSpeed = -this.blinkSpeed;
+        }
+      }
+      draw() {
+        ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+        ctx.fillRect(this.x, this.y, this.size, this.size);
+      }
     }
 
-    /* ===== HELPERS ===== */
-    const pad = (v, n) => String(v).padStart(n, "0");
-    const toMSK = d => new Date(d.getTime() + 3 * 3600000);
-    function fmtMSK(d) {
-      const m = toMSK(d);
-      return pad(m.getUTCHours(),2) + ":" + pad(m.getUTCMinutes(),2) + ":" + pad(m.getUTCSeconds(),2);
+    // Heart canvas wave entity (spawns on taps)
+    class HeartWave {
+      constructor(x, y, scaleFactor = 1.0) {
+        this.x = x;
+        this.y = y;
+        this.size = Math.random() * 8 + 10;
+        this.scale = 0.1;
+        this.targetScale = Math.random() * 1.4 + 0.8;
+        this.opacity = 1;
+        this.angle = Math.random() * Math.PI * 2;
+        this.speed = Math.random() * 3 + 1.5;
+        this.vx = Math.cos(this.angle) * this.speed;
+        this.vy = Math.sin(this.angle) * this.speed - 1.0; // upward drift
+        this.rot = Math.random() * 0.2 - 0.1;
+        this.rotation = 0;
+        this.color = `rgba(${MOOD_THEMES[activeMood].primary}, ${Math.random() * 0.4 + 0.6})`;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.scale += (this.targetScale - this.scale) * 0.1;
+        this.rotation += this.rot;
+        this.opacity -= 0.018;
+      }
+      draw() {
+        if (this.opacity <= 0) return;
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotation);
+        ctx.scale(this.scale, this.scale);
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        // Draw precise path of a heart
+        ctx.moveTo(0, -this.size / 4);
+        ctx.bezierCurveTo(-this.size/2, -this.size, -this.size, -this.size/3, -this.size, 0);
+        ctx.bezierCurveTo(-this.size, this.size/3, -this.size/3, this.size/2, 0, this.size);
+        ctx.bezierCurveTo(this.size/3, this.size/2, this.size, this.size/3, this.size, 0);
+        ctx.bezierCurveTo(this.size, -this.size/3, this.size/2, -this.size, 0, -this.size/4);
+        ctx.fill();
+        ctx.restore();
+      }
     }
 
-    /* ===== RING ===== */
-    function setRing(el, frac) {
-      if (!el) return;
-      el.style.strokeDashoffset = CIRC * (1 - Math.min(Math.max(frac, 0), 1));
+    // Initialize stars array
+    for (let i = 0; i < 55; i++) {
+      stars.push(new Star());
     }
 
-    /* ===== TICK ===== */
-    function tick() {
+    // Click anywhere on canvas background to spawn elegant floating hearts
+    window.addEventListener('pointerdown', (e) => {
+      // Only spawn if clicking the background canvas or glass panels (ignoring interactive buttons/toggles)
+      if (e.target.closest('button') || e.target.closest('a')) return;
+      
+      const count = Math.random() < 0.5 ? 2 : 3;
+      for (let i = 0; i < count; i++) {
+        heartWaves.push(new HeartWave(e.clientX, e.clientY));
+      }
+      
+      // Play subtle audio feedback heartbeat
+      if (audioEnabled && Math.random() < 0.4) {
+        playHeartbeatSynth(64, 0.25);
+      }
+    });
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw cosmic dust / stars
+      stars.forEach(star => {
+        star.update();
+        star.draw();
+      });
+
+      // Draw floating interactive hearts
+      for (let i = heartWaves.length - 1; i >= 0; i--) {
+        heartWaves[i].update();
+        heartWaves[i].draw();
+        if (heartWaves[i].opacity <= 0) {
+          heartWaves.splice(i, 1);
+        }
+      }
+      requestAnimationFrame(animateParticles);
+    }
+    requestAnimationFrame(animateParticles);
+
+    /* ===== PURE WEB AUDIO API SYNTHESIZER FOR ORGANIC HEARTBEAT ===== */
+    function initAudio() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function playHeartbeatSynth(frequency = 58, duration = 0.38) {
+      if (!audioEnabled) return;
+      try {
+        initAudio();
+        if (audioContext.state === 'suspended') {
+          audioContext.resume();
+        }
+
+        // First Beat (lub)
+        playTone(frequency, 0.09, duration * 0.7);
+        
+        // Second Beat (dub) slightly delayed and higher pitch
+        setTimeout(() => {
+          playTone(frequency * 1.08, 0.06, duration * 0.8);
+        }, 140);
+
+      } catch (error) {
+        console.warn("Audio synth failed to play", error);
+      }
+    }
+
+    function playTone(freq, volume, len) {
+      const osc = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      const filterNode = audioContext.createBiquadFilter();
+
+      osc.connect(filterNode);
+      filterNode.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, audioContext.currentTime);
+      
+      // Deep organic low-pass filtering
+      filterNode.type = 'lowpass';
+      filterNode.frequency.setValueAtTime(110, audioContext.currentTime);
+
+      gainNode.gain.setValueAtTime(0.001, audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(volume, audioContext.currentTime + 0.04);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + len);
+
+      osc.start(audioContext.currentTime);
+      osc.stop(audioContext.currentTime + len + 0.1);
+    }
+
+    function toggleHeartSynth() {
+      audioEnabled = !audioEnabled;
+      if (audioEnabled) {
+        initAudio();
+        el.audioToggle.classList.add('ring-1', 'ring-[rgb(var(--accent-rgb))]');
+        el.audioToggle.classList.remove('text-white/40');
+        el.audioToggle.classList.add('text-white');
+        el.audioIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z"/>`;
+        
+        // Synthesize greeting heartbeat
+        setTimeout(() => playHeartbeatSynth(60), 100);
+      } else {
+        el.audioToggle.classList.remove('ring-1', 'ring-[rgb(var(--accent-rgb))]');
+        el.audioToggle.classList.add('text-white/40');
+        el.audioToggle.classList.remove('text-white');
+        el.audioIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M17.25 9.75L19.5 12m0 0l2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6L4.5 9H1.5v6h3l4.5 3.75V5.25z" />`;
+      }
+    }
+
+    /* ===== USER MOOD MANAGER ===== */
+    function setMood(moodKey) {
+      if (!MOOD_THEMES[moodKey]) return;
+      activeMood = moodKey;
+
+      // Reset state active ring colors
+      ['miss', 'love', 'dream', 'warmth'].forEach(k => {
+        const targetEl = document.getElementById(`mood-${k}`);
+        if (targetEl) {
+          if (k === moodKey) {
+            targetEl.classList.add('ring-1', 'ring-[rgba(var(--accent-rgb),0.4)]', 'bg-white/[0.08]');
+            targetEl.classList.remove('opacity-70');
+          } else {
+            targetEl.classList.remove('ring-1', 'ring-[rgba(var(--accent-rgb),0.4)]', 'bg-white/[0.08]');
+            targetEl.classList.add('opacity-70');
+          }
+        }
+      });
+
+      // Set Root custom CSS Variables dynamically
+      const theme = MOOD_THEMES[moodKey];
+      document.documentElement.style.setProperty('--accent-rgb', theme.primary);
+      document.documentElement.style.setProperty('--accent-secondary-rgb', theme.secondary);
+
+      // Adjust neon aura colors instantly
+      const orb1 = document.getElementById('glow-orb-1');
+      const orb2 = document.getElementById('glow-orb-2');
+      if (orb1) orb1.style.background = `rgba(${theme.primary}, 0.12)`;
+      if (orb2) orb2.style.background = `rgba(${theme.secondary}, 0.12)`;
+
+      // Audio feedback
+      if (audioEnabled) {
+        const frequencies = { miss: 52, love: 58, dream: 64, warmth: 48 };
+        playHeartbeatSynth(frequencies[moodKey] || 58);
+      }
+
+      // Spawn multi-colored bursts of custom mood hearts
+      for(let i=0; i<12; i++) {
+        heartWaves.push(new HeartWave(window.innerWidth / 2, window.innerHeight * 0.65));
+      }
+
+      el.appStatus.textContent = theme.status;
+    }
+
+    /* ===== INTERACTIVE ACTION: SEND THOUGHT OF LOVE ===== */
+    function sendLoveThought(event) {
+      thoughtsCount++;
+      localStorage.setItem('thoughts_love_taps', thoughtsCount.toString());
+      el.statThoughts.textContent = thoughtsCount.toLocaleString('ru-RU');
+
+      // Pulse effects and sounds
+      if (audioEnabled) {
+        playHeartbeatSynth(62, 0.4);
+      }
+
+      // Canvas particle emission from the click/tap location
+      const touchX = event.clientX || (window.innerWidth / 2);
+      const touchY = event.clientY || (window.innerHeight * 0.6);
+      for (let i = 0; i < 6; i++) {
+        heartWaves.push(new HeartWave(touchX, touchY));
+      }
+    }
+
+    /* ===== CALCULATION & MAIN REFRESH TIMER ===== */
+    const formatNumber = (num, digits = 2) => String(num).padStart(digits, '0');
+
+    function updateTimeline() {
       try {
         const now = new Date();
-        const diff = TARGET - now;
+        const remainingTime = TARGET_DATE - now;
 
-        if ($.msk) $.msk.textContent = fmtMSK(now);
+        // Update Real Moscow Time inside Pill
+        const mskTime = new Date(now.getTime() + 3 * 3600000); // Moscow Offset UTC+3
+        el.mskClock.textContent = 
+          formatNumber(mskTime.getUTCHours()) + ":" + 
+          formatNumber(mskTime.getUTCMinutes()) + ":" + 
+          formatNumber(mskTime.getUTCSeconds());
 
-        if (diff <= 0) {
-          if ($.overlay) { $.overlay.classList.add("active"); $.overlay.setAttribute("aria-hidden","false"); }
-          setVals(0,0,0,0);
-          setRing($.rd, 1); setRing($.rh, 1); setRing($.rm, 1); setRing($.rs, 1);
-          updProg(100);
+        // Celebration Handler
+        if (remainingTime <= 0) {
+          el.celebrationOverlay.classList.remove('hidden');
+          el.celebrationOverlay.classList.add('flex');
+          
+          // Reset components to final completed state
+          setCountdownValues(0, 0, 0, 0);
+          updateRadialProgressRings(0, 0, 0, 0);
+          
+          el.precisePct.textContent = "100.000000%";
+          el.progressFill.style.width = "100%";
           return;
         }
 
-        const t = Math.floor(diff / 1000);
-        const d = Math.floor(t / 86400);
-        const h = Math.floor((t % 86400) / 3600);
-        const m = Math.floor((t % 3600) / 60);
-        const s = t % 60;
+        // Base units computation
+        const totalSeconds = Math.floor(remainingTime / 1000);
+        const days = Math.floor(totalSeconds / 86400);
+        const hours = Math.floor((totalSeconds % 86400) / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
 
-        setVals(d, h, m, s);
-        setRing($.rd, (d % 365) / 365);
-        setRing($.rh, h / 24);
-        setRing($.rm, m / 60);
-        setRing($.rs, s / 60);
+        // Dynamic interface sets
+        setCountdownValues(days, hours, minutes, seconds);
+        updateRadialProgressRings(days, hours, minutes, seconds);
 
-        const prog = Math.min(Math.max(((now - START) / TOTAL) * 100, 0), 100);
-        updProg(prog);
+        // Cumulative parameters computations
+        const exactTotalHours = Math.floor(remainingTime / 3600000);
+        const exactTotalMinutes = Math.floor(remainingTime / 60000);
+        const estimatedHeartbeats = Math.floor(remainingTime / 833); // ~ 72 bpm
 
-        if ($.th) $.th.textContent = Math.floor(t / 3600).toLocaleString("ru-RU");
-        if ($.tm) $.tm.textContent = Math.floor(t / 60).toLocaleString("ru-RU");
-        if ($.ts) $.ts.textContent = t.toLocaleString("ru-RU");
-        if ($.hb) $.hb.textContent = Math.floor(t * 1.2).toLocaleString("ru-RU");
+        el.statHours.textContent = exactTotalHours.toLocaleString('ru-RU');
+        el.statMinutes.textContent = exactTotalMinutes.toLocaleString('ru-RU');
+        el.statHearts.textContent = estimatedHeartbeats.toLocaleString('ru-RU');
 
-        if ($.daysPassed) {
-          $.daysPassed.textContent = Math.max(0, Math.floor((now - START) / 86400000));
+        // High-Fidelity continuous fractional percentage
+        const elapsed = now - START_DATE;
+        const calculatedPct = Math.min(Math.max((elapsed / TOTAL_SPAN) * 100, 0), 100);
+        el.precisePct.textContent = calculatedPct.toFixed(6) + "%";
+        el.progressFill.style.width = calculatedPct + "%";
+
+        // Elapsed Days calculation badge
+        const daysElapsed = Math.max(0, Math.floor(elapsed / 86400000));
+        el.daysPassedBadge.textContent = daysElapsed.toLocaleString('ru-RU');
+
+        // Heartbeat synth click every second automatically
+        if (audioEnabled && (seconds % 2 === 0) && (now.getMilliseconds() < 50)) {
+          playHeartbeatSynth(58, 0.35);
         }
-      } catch (e) { console.error("tick:", e); }
+
+      } catch (error) {
+        console.error("Error refreshing layout timeline calculation", error);
+      }
     }
 
-    function setVals(d, h, m, s) {
-      if ($.d) $.d.textContent = pad(d, 3);
-      if ($.h) $.h.textContent = pad(h, 2);
-      if ($.m) $.m.textContent = pad(m, 2);
-      if ($.s) $.s.textContent = pad(s, 2);
+    function setCountdownValues(d, h, m, s) {
+      el.d.textContent = formatNumber(d, 3);
+      el.h.textContent = formatNumber(h);
+      el.m.textContent = formatNumber(m);
+      el.s.textContent = formatNumber(s);
     }
 
-    function updProg(pct) {
-      if ($.fill) $.fill.style.width = pct + "%";
-      if ($.pct)  $.pct.textContent = pct.toFixed(4) + "%";
-      const track = $.fill && $.fill.parentElement;
-      if (track) track.setAttribute("aria-valuenow", Math.round(pct));
+    function updateRadialProgressRings(d, h, m, s) {
+      // Rings calculations (Scale proportions relative to base boundaries)
+      setRingOffset(el.ringD, (d % 100) / 100);
+      setRingOffset(el.ringH, h / 24);
+      setRingOffset(el.ringM, m / 60);
+      setRingOffset(el.ringS, s / 60);
     }
 
-    /* ===== QUOTES ===== */
-    let qi = 0;
-    function rotateQuote() {
-      if (!$.q) return;
-      $.q.classList.add("hide");
+    function setRingOffset(element, fraction) {
+      if (!element) return;
+      const offset = RING_CIRCUMFERENCE * (1 - Math.min(Math.max(fraction, 0), 1));
+      element.style.strokeDashoffset = offset;
+    }
+
+    function resetCelebration() {
+      el.celebrationOverlay.classList.add('hidden');
+      el.celebrationOverlay.classList.remove('flex');
+    }
+
+    /* ===== PREMIUM QUOTE ROTATOR ===== */
+    function displayNextQuote() {
+      el.quoteDisplay.classList.remove('opacity-100', 'translate-y-0');
+      el.quoteDisplay.classList.add('opacity-0', 'translate-y-2');
+
       setTimeout(() => {
-        $.q.textContent = QUOTES[qi];
-        $.q.classList.remove("hide");
-        qi = (qi + 1) % QUOTES.length;
-      }, 320);
+        el.quoteDisplay.textContent = PHRASES[currentQuoteIndex];
+        el.quoteDisplay.classList.remove('opacity-0', 'translate-y-2');
+        el.quoteDisplay.classList.add('opacity-100', 'translate-y-0');
+        
+        currentQuoteIndex = (currentQuoteIndex + 1) % PHRASES.length;
+        quoteTimer = 0;
+      }, 500);
     }
 
-    /* ===== PARTICLES ===== */
-    const pColors = [
-      "rgba(251,113,133,0.55)",
-      "rgba(167,139,250,0.45)",
-      "rgba(103,232,249,0.4)",
-      "rgba(251,191,36,0.4)"
-    ];
+    function updateQuoteProgressLine() {
+      quoteTimer += 50; // Milliseconds step matches interval rate
+      const percentage = Math.min((quoteTimer / quoteInterval) * 100, 100);
+      el.quoteTimerLine.style.width = percentage + "%";
 
-    function spawnParticle() {
-      if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
-      try {
-        const el = document.createElement("div");
-        const isHeart = Math.random() < 0.2; // 20% chance of heart shape
-
-        if (isHeart) {
-          // SVG heart particle
-          el.className = "particle particle--heart";
-          const size = 10 + Math.random() * 10;
-          const color = pColors[Math.floor(Math.random() * pColors.length)];
-          el.innerHTML = `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
-          el.style.left = Math.random() * 100 + "vw";
-          el.style.bottom = "0";
-          const dur = 12 + Math.random() * 14;
-          el.style.setProperty("--dur", dur + "s");
-          el.style.setProperty("--op", (0.3 + Math.random() * 0.3).toFixed(2));
-        } else {
-          // Circle particle
-          el.className = "particle";
-          const size = 2 + Math.random() * 3;
-          el.style.width = size + "px";
-          el.style.height = size + "px";
-          el.style.left = Math.random() * 100 + "vw";
-          el.style.bottom = "0";
-          const color = pColors[Math.floor(Math.random() * pColors.length)];
-          el.style.background = color;
-          el.style.boxShadow = "0 0 " + (size * 3) + "px " + color;
-          const dur = 10 + Math.random() * 16;
-          el.style.setProperty("--dur", dur + "s");
-          el.style.setProperty("--op", (0.25 + Math.random() * 0.35).toFixed(2));
-        }
-
-        document.body.appendChild(el);
-        const dur = parseFloat(el.style.getPropertyValue("--dur"));
-        setTimeout(() => el.remove(), (dur + 1) * 1000);
-      } catch(e) {}
-    }
-
-    /* ===== INIT ===== */
-    function hideLoader() {
-      if ($.loader) {
-        $.loader.classList.add("hide");
-        setTimeout(() => { if ($.loader) $.loader.remove(); }, 700);
+      if (quoteTimer >= quoteInterval) {
+        displayNextQuote();
       }
     }
 
-    function init() {
+    /* ===== INITIALIZATION ROUTINE ===== */
+    function initializeApp() {
       try {
-        cache();
-        setTimeout(hideLoader, 350);
+        // Restore Tap Counter
+        el.statThoughts.textContent = thoughtsCount.toLocaleString('ru-RU');
 
-        tick();
-        rotateQuote();
+        // Hide Preloader with fading transition
+        setTimeout(() => {
+          el.loader.classList.add('opacity-0', 'pointer-events-none');
+          setTimeout(() => el.loader.remove(), 750);
+        }, 800);
 
-        setInterval(tick, 1000);
-        setInterval(rotateQuote, 8000);
-        setInterval(spawnParticle, 2800);
-        // Initial burst
-        setTimeout(spawnParticle, 400);
-        setTimeout(spawnParticle, 900);
-        setTimeout(spawnParticle, 1400);
-        setTimeout(spawnParticle, 2000);
+        // Set Default Active Mood
+        setMood('love');
 
-        if ($.overlay) $.overlay.setAttribute("aria-hidden", "true");
-      } catch (e) {
-        console.error("init:", e);
-        hideLoader();
+        // Trigger initial calculations immediately
+        updateTimeline();
+        
+        // Set Interval Rates
+        setInterval(updateTimeline, 50); // High-frequency smooth fraction timer refresh
+        
+        // Quote triggers
+        displayNextQuote();
+        setInterval(updateQuoteProgressLine, 50);
+
+      } catch (error) {
+        console.error("Fatal error during app instantiation sequence", error);
+        if (el.loader) el.loader.remove();
       }
     }
 
-    // Robust ready handler
-    function ready(fn) {
-      if (document.readyState !== "loading") setTimeout(fn, 50);
-      else document.addEventListener("DOMContentLoaded", fn);
-      window.addEventListener("load", fn);
-      setTimeout(fn, 1500); // Fallback
+    // Document Ready Handlers
+    if (document.readyState !== 'loading') {
+      initializeApp();
+    } else {
+      document.addEventListener('DOMContentLoaded', initializeApp);
     }
 
-    ready(init);
   </script>
 </body>
 </html>

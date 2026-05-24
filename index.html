@@ -1,309 +1,762 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>💖 Countdown to You</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💖</text></svg>">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>До встречи</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='38' fill='none' stroke='%23fb7185' stroke-width='4'/><circle cx='50' cy='50' r='4' fill='%23a78bfa'/><line x1='50' y1='50' x2='50' y2='22' stroke='%23fb7185' stroke-width='3.5' stroke-linecap='round'/><line x1='50' y1='50' x2='72' y2='50' stroke='%23a78bfa' stroke-width='3.5' stroke-linecap='round'/></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&display=swap" rel="stylesheet">
   <style>
+    /* ===== DESIGN TOKENS ===== */
     :root {
-      --pink: #ff2d75; --violet: #7b2dff; --cyan: #00f0ff;
-      --bg: #0a0a1a; --card: rgba(255,255,255,.04); --line: rgba(255,255,255,.12);
-      --txt: #fff; --muted: rgba(255,255,255,.65); --success: #00ff88;
+      --bg: #09090b;
+      --surface: rgba(255,255,255,0.03);
+      --surface-2: rgba(255,255,255,0.055);
+      --border: rgba(255,255,255,0.055);
+      --text: #fafafa;
+      --text-2: rgba(255,255,255,0.58);
+      --text-3: rgba(255,255,255,0.32);
+      --rose: #fb7185;
+      --violet: #a78bfa;
+      --cyan: #67e8f9;
+      --amber: #fbbf24;
+      --emerald: #34d399;
     }
-    @media (prefers-color-scheme: light) {
-      :root {
-        --bg: #f8f9ff; --card: rgba(10,10,26,.04); --line: rgba(10,10,26,.12);
-        --txt: #0a0a1a; --muted: rgba(10,10,26,.65);
-      }
-    }
+
+    /* ===== REDUCED MOTION ===== */
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
       }
-      .heart { display: none; }
+      .particle, .ambient { display: none !important; }
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ===== RESET ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
     body {
       min-height: 100dvh;
-      color: var(--txt);
       background: var(--bg);
-      font-family: Poppins, sans-serif;
+      color: var(--text);
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       line-height: 1.5;
-      transition: background 0.3s ease, color 0.3s ease;
+      overflow-x: hidden;
     }
-    .app { min-height: 100dvh; display: grid; place-items: center; padding: 16px; }
-    .wrap { width: min(980px, 100%); display: grid; gap: 16px; }
-    
-    .header { text-align: center; }
-    .badge { display: inline-flex; gap: 8px; align-items: center; padding: 8px 18px; border: 1px solid var(--line); border-radius: 99px; background: var(--card); color: var(--muted); font-size: 12px; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); box-shadow: 0 0 12px var(--success); animation: pulse 2s ease-in-out infinite; }
-    h1 { margin-top: 10px; font-family: Orbitron, sans-serif; letter-spacing: 2px; font-size: clamp(1.7rem, 5vw, 3rem); background: linear-gradient(120deg, var(--pink), var(--violet), var(--cyan)); background-size: 200% 200%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: flow 4s ease-in-out infinite; }
-    .sub { margin-top: 6px; color: var(--muted); }
-    
-    .msk { text-align: center; font-family: Orbitron, sans-serif; color: var(--muted); font-size: .85rem; letter-spacing: 2px; }
-    .msk b { color: var(--cyan); }
-    
-    .grid { display: grid; gap: 12px; grid-template-columns: repeat(4, 1fr); }    .card { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 16px 10px; text-align: center; position: relative; overflow: hidden; transition: transform 0.2s ease, border-color 0.2s ease; }
-    .card:hover { transform: translateY(-2px); border-color: var(--cyan); }
-    .big { font-family: Orbitron, sans-serif; font-size: clamp(2.2rem, 8vw, 4.5rem); font-weight: 900; text-shadow: 0 0 28px rgba(255,255,255,.15); }
-    .label { margin-top: 4px; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; font-size: .74rem; }
-    
-    .ring { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; transform: rotate(-90deg); opacity: .6; }
-    .ring circle { fill: none; stroke-width: 3; }
-    .ring .bgc { stroke: var(--line); }
-    .ring .fg { stroke: var(--pink); stroke-linecap: round; transition: stroke-dashoffset .45s ease; }
-    
-    .panel { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 16px; }
-    .progress .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; color: var(--muted); font-size: .9rem; }
-    .pct { font-family: Orbitron, sans-serif; color: var(--cyan); }
-    .track { margin-top: 10px; height: 8px; border-radius: 99px; background: var(--line); overflow: hidden; }
-    .fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--pink), var(--violet), var(--cyan)); transition: width .7s ease; }
-    .dates { margin-top: 10px; display: flex; justify-content: space-between; color: var(--muted); font-size: .72rem; flex-wrap: wrap; gap: 4px; }
-    
-    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-    .stat { padding: 12px; text-align: center; }
-    .sv { font-family: Orbitron, sans-serif; font-size: clamp(1rem, 2.8vw, 1.4rem); }
-    .sl { color: var(--muted); font-size: .7rem; text-transform: uppercase; margin-top: 2px; letter-spacing: 1px; }
-    
-    .quote { text-align: center; color: var(--muted); min-height: 88px; }
-    .q { font-style: italic; transition: opacity .35s ease, transform .35s ease; }
-    .q.hide { opacity: 0; transform: translateY(6px); }
-    
-    .passed { margin: 0 auto; width: fit-content; padding: 8px 16px; border-radius: 99px; border: 1px solid var(--line); background: var(--card); font-family: Orbitron, sans-serif; color: var(--cyan); font-size: .75rem; }
-    .passed b { color: var(--success); }
-    
-    .target { margin: 0 auto; width: fit-content; padding: 10px 18px; border-radius: 99px; border: 1px solid rgba(255,45,117,.3); background: linear-gradient(135deg, rgba(255,45,117,.12), rgba(123,45,255,.12)); font-family: Orbitron, sans-serif; color: var(--pink); font-size: .8rem; }
-    
-    .heart { position: fixed; z-index: 1; pointer-events: none; animation: up var(--d,8s) linear forwards; opacity: 0; will-change: transform, opacity; }
-    
-    .overlay { position: fixed; inset: 0; z-index: 9; display: none; place-items: center; text-align: center; background: rgba(10,10,26,.95); padding: 20px; }
-    .overlay.on { display: grid; }
-    .overlay h2 { font-family: Orbitron, sans-serif; font-size: clamp(2rem, 8vw, 4rem); background: linear-gradient(120deg, var(--pink), #ff8800, var(--pink)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-    .overlay p { color: var(--muted); margin-top: 8px; }
-    
-    .load { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; background: var(--bg); font-size: 3rem; animation: beat 1s ease-in-out infinite; }
-    .load.hide { opacity: 0; visibility: hidden; transition: opacity .8s ease, visibility .8s ease; }
-    
-    @keyframes flow { 50% { background-position: 100% 50%; } }
-    @keyframes beat { 50% { transform: scale(1.2); } }
-    @keyframes pulse { 50% { opacity: .45; transform: scale(.8); } }
-    @keyframes up { 0%{transform:translateY(100vh) scale(0)} 10%{opacity:.85; transform:translateY(90vh) scale(1)} 100%{opacity:0; transform:translateY(-10vh) rotate(280deg) scale(.5)} }
-    
-    @media (max-width: 800px) {
-      .app { padding: 8px; place-items: start center; }
-      .wrap { width: 100%; gap: 12px; }
-      .progress { padding: 12px; }      .quote { padding: 12px; min-height: 64px; }
-      .target, .passed { padding: 6px 12px; font-size: .7rem; }
-      .grid { grid-template-columns: repeat(2, 1fr); }
-      .stats { grid-template-columns: repeat(2, 1fr); }
+
+    /* ===== AMBIENT BACKGROUND ===== */
+    .ambient {
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none; overflow: hidden;
     }
-    @media (max-width: 480px) {
-      .grid { grid-template-columns: 1fr 1fr; }
-      .stats { grid-template-columns: 1fr 1fr; }
-      .big { font-size: clamp(1.8rem, 7vw, 3rem); }
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(90px); will-change: transform;
     }
+    .orb-1 {
+      width: 320px; height: 320px; top: -100px; left: -80px;
+      background: rgba(251,113,133,0.1);
+      animation: drift 22s ease-in-out infinite;
+    }
+    .orb-2 {
+      width: 280px; height: 280px; bottom: 5%; right: -100px;
+      background: rgba(167,139,250,0.09);
+      animation: drift 28s ease-in-out infinite reverse;
+    }
+    .orb-3 {
+      width: 200px; height: 200px; bottom: 35%; left: 15%;
+      background: rgba(103,232,249,0.05);
+      animation: drift 32s ease-in-out infinite 5s;
+    }
+    @keyframes drift {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(30px, -25px) scale(1.05); }
+      50% { transform: translate(-25px, 35px) scale(0.95); }
+      75% { transform: translate(25px, 20px) scale(1.02); }
+    }
+
+    /* ===== LOADER ===== */
+    .loader {
+      position: fixed; inset: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--bg);
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+    .loader.hide { opacity: 0; visibility: hidden; pointer-events: none; }
+    .spinner {
+      width: 44px; height: 44px;
+      animation: spin 1s linear infinite;
+    }
+    .spinner circle { fill: none; stroke-width: 3; stroke-linecap: round; }
+    .spinner .sp-track { stroke: rgba(255,255,255,0.06); }
+    .spinner .sp-fill { stroke: var(--rose); stroke-dasharray: 90 40; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ===== COMPLETION OVERLAY ===== */
+    .overlay {
+      position: fixed; inset: 0; z-index: 50;
+      display: none; align-items: center; justify-content: center;
+      text-align: center; padding: 24px;
+      background: rgba(9,9,11,0.92);
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    }
+    .overlay.active { display: flex; }
+    .overlay-heart {
+      width: 72px; height: 72px; margin: 0 auto 20px;
+      color: var(--rose); animation: heartpulse 1.2s ease-in-out infinite;
+    }
+    .overlay h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.9rem; font-weight: 700; letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--rose), var(--amber), var(--rose));
+      background-size: 200% 200%;
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      animation: flow 3s ease-in-out infinite;
+    }
+    .overlay p { color: var(--text-2); margin-top: 8px; font-size: 0.9rem; }
+    @keyframes heartpulse {
+      0%, 100% { transform: scale(1); }
+      14% { transform: scale(1.18); }
+      28% { transform: scale(1); }
+      42% { transform: scale(1.12); }
+    }
+
+    /* ===== MAIN APP ===== */
+    .app {
+      position: relative; z-index: 1;
+      max-width: 430px; margin: 0 auto;
+      padding: 24px 16px 48px;
+      min-height: 100dvh;
+    }
+
+    /* ===== HEADER ===== */
+    .header { text-align: center; margin-bottom: 28px; }
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 5px 14px;
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: 99px;
+      font-size: 0.65rem; font-weight: 500; color: var(--text-3);
+      letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    .live-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--emerald);
+      box-shadow: 0 0 8px rgba(52,211,153,0.6);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+    .header h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem; font-weight: 700; letter-spacing: -0.04em;
+      margin-top: 14px;
+      background: linear-gradient(135deg, var(--text) 0%, var(--rose) 50%, var(--text) 100%);
+      background-size: 200% 200%;
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      animation: flow 6s ease-in-out infinite;
+    }
+    @keyframes flow { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+
+    .header .sub {
+      color: var(--text-3); font-size: 0.82rem; margin-top: 4px;
+    }
+
+    /* ===== TIME BAR ===== */
+    .time-bar {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 7px 16px; margin-bottom: 20px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 0.75rem; color: var(--text-3);
+    }
+    .time-bar svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .time-bar strong {
+      color: var(--cyan); font-family: 'Space Grotesk', sans-serif; font-weight: 500;
+    }
+
+    /* ===== COUNTDOWN GRID ===== */
+    .cd-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 12px; margin-bottom: 14px;
+    }
+    .cd-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 20px 10px 14px;
+      display: flex; flex-direction: column; align-items: center;
+      position: relative; overflow: hidden;
+    }
+    .cd-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0.5;
+    }
+    .cd-card::after {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, var(--glow) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cd-card--rose { --accent: var(--rose); --glow: rgba(251,113,133,0.04); }
+    .cd-card--violet { --accent: var(--violet); --glow: rgba(167,139,250,0.04); }
+    .cd-card--cyan { --accent: var(--cyan); --glow: rgba(103,232,249,0.04); }
+    .cd-card--amber { --accent: var(--amber); --glow: rgba(251,191,36,0.04); }
+
+    .cd-ring-wrap {
+      position: relative; width: 90px; height: 90px; margin-bottom: 8px;
+    }
+    .cd-ring-svg {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      transform: rotate(-90deg);
+    }
+    .cd-ring-svg .rbg { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 3.5; }
+    .cd-ring-svg .rfg {
+      fill: none; stroke: var(--accent); stroke-width: 3.5;
+      stroke-linecap: round; transition: stroke-dashoffset 0.5s cubic-bezier(0.4,0,0.2,1);
+      filter: drop-shadow(0 0 6px var(--accent));
+    }
+    .cd-val {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.65rem; font-weight: 700;
+      color: var(--text); user-select: none;
+    }
+    .cd-lbl {
+      font-size: 0.62rem; color: var(--text-3);
+      text-transform: uppercase; letter-spacing: 0.12em; font-weight: 500;
+    }
+
+    /* ===== CARD (shared) ===== */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px; padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    /* ===== PROGRESS ===== */
+    .prog-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .prog-title {
+      display: flex; align-items: center; gap: 8px;
+      color: var(--text-2); font-size: 0.82rem; font-weight: 500;
+    }
+    .prog-title svg { width: 15px; height: 15px; color: var(--violet); flex-shrink: 0; }
+    .prog-pct {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.82rem; font-weight: 700; color: var(--cyan);
+    }
+    .prog-track {
+      width: 100%; height: 8px; border-radius: 99px;
+      background: rgba(255,255,255,0.05); overflow: hidden;
+    }
+    .prog-fill {
+      height: 100%; width: 0%; border-radius: 99px;
+      background: linear-gradient(90deg, var(--rose), var(--violet), var(--cyan));
+      background-size: 200% 100%;
+      animation: gradient-shift 4s ease infinite;
+      transition: width 0.7s cubic-bezier(0.4,0,0.2,1);
+      position: relative; overflow: hidden;
+    }
+    .prog-fill::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%);
+      animation: shimmer 2.5s ease-in-out infinite;
+    }
+    @keyframes gradient-shift { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+    @keyframes shimmer { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
+
+    .prog-dates {
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px;
+      margin-top: 10px; font-size: 0.65rem; color: var(--text-3);
+    }
+    .prog-dates b { color: var(--text-2); font-weight: 500; }
+
+    /* ===== STATS GRID ===== */
+    .stats {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 10px; margin-bottom: 14px;
+    }
+    .st-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 13px 12px;
+      display: flex; align-items: center; gap: 11px;
+    }
+    .st-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .st-icon svg { width: 17px; height: 17px; }
+    .st-icon--rose { background: rgba(251,113,133,0.1); color: var(--rose); }
+    .st-icon--violet { background: rgba(167,139,250,0.1); color: var(--violet); }
+    .st-icon--cyan { background: rgba(103,232,249,0.1); color: var(--cyan); }
+    .st-icon--amber { background: rgba(251,191,36,0.1); color: var(--amber); }
+
+    .st-body { min-width: 0; }
+    .st-val {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.95rem; font-weight: 700; color: var(--text); line-height: 1.2;
+    }
+    .st-lbl {
+      font-size: 0.6rem; color: var(--text-3);
+      text-transform: uppercase; letter-spacing: 0.08em; margin-top: 1px;
+    }
+
+    /* ===== QUOTE ===== */
+    .quote-card {
+      text-align: center; position: relative; padding: 28px 20px 24px;
+    }
+    .quote-mark {
+      position: absolute; top: 10px; left: 14px;
+      width: 22px; height: 22px; color: rgba(255,255,255,0.05);
+    }
+    .quote-text {
+      font-style: italic; color: var(--text-2); font-size: 0.88rem; line-height: 1.65;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      min-height: 3.3em;
+    }
+    .quote-text.hide { opacity: 0; transform: translateY(6px); }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 10px; margin-top: 4px;
+    }
+    .pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 7px 16px; border-radius: 99px;
+      font-size: 0.68rem; font-weight: 500; letter-spacing: 0.01em;
+    }
+    .pill svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .pill--ghost {
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--text-2);
+    }
+    .pill--ghost b {
+      color: var(--emerald); font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+    }
+    .pill--glow {
+      background: linear-gradient(135deg, rgba(251,113,133,0.08), rgba(167,139,250,0.08));
+      border: 1px solid rgba(251,113,133,0.12);
+      color: var(--rose); font-family: 'Space Grotesk', sans-serif; font-weight: 500;
+    }
+
+    /* ===== PARTICLES ===== */
+    .particle {
+      position: fixed; border-radius: 50%;
+      pointer-events: none; z-index: 0;
+      will-change: transform, opacity;
+      animation: floatup var(--dur) linear forwards;
+    }
+    .particle--heart {
+      border-radius: 0; opacity: 0;
+      animation: floatup var(--dur) linear forwards;
+    }
+    @keyframes floatup {
+      0% { transform: translateY(0) scale(0); opacity: 0; }
+      8% { opacity: var(--op, 0.35); transform: translateY(-5vh) scale(1); }
+      100% { opacity: 0; transform: translateY(-110vh) scale(0.3); }
+    }
+
+    /* ===== SVG ICON HELPERS ===== */
+    .icon { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .icon-fill { fill: currentColor; stroke: none; }
   </style>
 </head>
 <body>
-  <div class="load" id="load" role="status" aria-label="Загрузка">💖</div>
-  
+
+  <!-- Ambient background -->
+  <div class="ambient" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- Loader -->
+  <div class="loader" id="loader" role="status" aria-label="Загрузка">
+    <svg viewBox="0 0 50 50" class="spinner">
+      <circle cx="25" cy="25" r="20" class="sp-track"/>
+      <circle cx="25" cy="25" r="20" class="sp-fill"/>
+    </svg>
+  </div>
+
+  <!-- Completion overlay -->
   <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-hidden="true">
     <div>
-      <h2>ОНА ЗДЕСЬ! 💖</h2>
-      <p>Момент, которого вы ждали, наступил!</p>
+      <div class="overlay-heart">
+        <svg viewBox="0 0 24 24" class="icon" stroke-width="1.5">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+      </div>
+      <h2>Время пришло!</h2>
+      <p>Момент, которого мы ждали, наступил</p>
     </div>
   </div>
-  
-  <main class="app" id="app">
-    <section class="wrap">
-      <header class="header">
-        <div class="badge"><span class="dot" aria-hidden="true"></span><span>LIVE COUNTDOWN</span></div>
-        <h1>WAITING FOR YOU</h1>
-        <p class="sub">Каждая секунда приближает встречу 💕</p>
-      </header>
-      
-      <div class="msk">МСК: <b id="msk">--:--:--</b></div>
-      
-      <section class="grid" role="timer" aria-label="Обратный отсчёт">
-        <article class="card"><div class="big" id="d">000</div><div class="label">Дней</div><svg class="ring" viewBox="0 0 36 36" aria-hidden="true"><circle class="bgc" cx="18" cy="18" r="15.5"/><circle class="fg" id="rd" cx="18" cy="18" r="15.5" stroke-dasharray="97.4"/></svg></article>
-        <article class="card"><div class="big" id="h">00</div><div class="label">Часов</div><svg class="ring" viewBox="0 0 36 36" aria-hidden="true"><circle class="bgc" cx="18" cy="18" r="15.5"/><circle class="fg" id="rh" cx="18" cy="18" r="15.5" stroke-dasharray="97.4"/></svg></article>
-        <article class="card"><div class="big" id="m">00</div><div class="label">Минут</div><svg class="ring" viewBox="0 0 36 36" aria-hidden="true"><circle class="bgc" cx="18" cy="18" r="15.5"/><circle class="fg" id="rm" cx="18" cy="18" r="15.5" stroke-dasharray="97.4"/></svg></article>
-        <article class="card"><div class="big" id="s">00</div><div class="label">Секунд</div><svg class="ring" viewBox="0 0 36 36" aria-hidden="true"><circle class="bgc" cx="18" cy="18" r="15.5"/><circle class="fg" id="rs" cx="18" cy="18" r="15.5" stroke-dasharray="97.4"/></svg></article>
-      </section>
-      
-      <section class="panel progress">
-        <div class="row"><span>📊 Прогресс ожидания</span><b class="pct" id="pct">0.0000%</b></div>
-        <div class="track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"><div class="fill" id="fill"></div></div>
-        <div class="dates"><span>Старт: <b>20.03.2026</b></span><span>Финиш: <b>23.07.2026, 20:49 МСК</b></span></div>
-      </section>
-      
-      <section class="stats">
-        <article class="panel stat"><div class="sv" id="th">0</div><div class="sl">Всего часов</div></article>
-        <article class="panel stat"><div class="sv" id="tm">0</div><div class="sl">Всего минут</div></article>
-        <article class="panel stat"><div class="sv" id="ts">0</div><div class="sl">Всего секунд</div></article>
-        <article class="panel stat"><div class="sv" id="hb">0</div><div class="sl">💓 Ударов сердца</div></article>      </section>
-      
-      <section class="panel quote"><p class="q" id="q">Загрузка...</p><div id="qe">💌</div></section>
-      
-      <div class="passed">Прошло дней с 20.03: <b id="daysPassed">0</b></div>
-      <div class="target">🎯 23.07.2026 20:49 MSK</div>
+
+  <!-- Main app -->
+  <main class="app">
+    <header class="header">
+      <div class="status-pill">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span>Прямой эфир</span>
+      </div>
+      <h1>До встречи</h1>
+      <p class="sub">Каждая секунда приближает нас</p>
+    </header>
+
+    <!-- Moscow time -->
+    <div class="time-bar">
+      <svg viewBox="0 0 24 24" class="icon" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+      </svg>
+      <span>МСК <strong id="msk">--:--:--</strong></span>
+    </div>
+
+    <!-- Countdown -->
+    <section class="cd-grid" role="timer" aria-label="Обратный отсчёт">
+      <!-- Days -->
+      <article class="cd-card cd-card--rose">
+        <div class="cd-ring-wrap">
+          <svg viewBox="0 0 100 100" class="cd-ring-svg" aria-hidden="true">
+            <circle cx="50" cy="50" r="42" class="rbg"/>
+            <circle cx="50" cy="50" r="42" class="rfg" id="rd" stroke-dasharray="263.89" stroke-dashoffset="263.89"/>
+          </svg>
+          <div class="cd-val" id="d">000</div>
+        </div>
+        <div class="cd-lbl">дней</div>
+      </article>
+      <!-- Hours -->
+      <article class="cd-card cd-card--violet">
+        <div class="cd-ring-wrap">
+          <svg viewBox="0 0 100 100" class="cd-ring-svg" aria-hidden="true">
+            <circle cx="50" cy="50" r="42" class="rbg"/>
+            <circle cx="50" cy="50" r="42" class="rfg" id="rh" stroke-dasharray="263.89" stroke-dashoffset="263.89"/>
+          </svg>
+          <div class="cd-val" id="h">00</div>
+        </div>
+        <div class="cd-lbl">часов</div>
+      </article>
+      <!-- Minutes -->
+      <article class="cd-card cd-card--cyan">
+        <div class="cd-ring-wrap">
+          <svg viewBox="0 0 100 100" class="cd-ring-svg" aria-hidden="true">
+            <circle cx="50" cy="50" r="42" class="rbg"/>
+            <circle cx="50" cy="50" r="42" class="rfg" id="rm" stroke-dasharray="263.89" stroke-dashoffset="263.89"/>
+          </svg>
+          <div class="cd-val" id="m">00</div>
+        </div>
+        <div class="cd-lbl">минут</div>
+      </article>
+      <!-- Seconds -->
+      <article class="cd-card cd-card--amber">
+        <div class="cd-ring-wrap">
+          <svg viewBox="0 0 100 100" class="cd-ring-svg" aria-hidden="true">
+            <circle cx="50" cy="50" r="42" class="rbg"/>
+            <circle cx="50" cy="50" r="42" class="rfg" id="rs" stroke-dasharray="263.89" stroke-dashoffset="263.89"/>
+          </svg>
+          <div class="cd-val" id="s">00</div>
+        </div>
+        <div class="cd-lbl">секунд</div>
+      </article>
     </section>
+
+    <!-- Progress -->
+    <section class="card" aria-label="Прогресс ожидания">
+      <div class="prog-head">
+        <div class="prog-title">
+          <svg viewBox="0 0 24 24" class="icon" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="4"/><line x1="12" y1="20" x2="12" y2="8"/><line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+          <span>Прогресс ожидания</span>
+        </div>
+        <span class="prog-pct" id="pct">0.0000%</span>
+      </div>
+      <div class="prog-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+        <div class="prog-fill" id="fill"></div>
+      </div>
+      <div class="prog-dates">
+        <span>Старт: <b>20.03.2026</b></span>
+        <span>Финиш: <b>23.07.2026, 20:49</b></span>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats" aria-label="Статистика">
+      <article class="st-card">
+        <div class="st-icon st-icon--rose">
+          <svg viewBox="0 0 24 24" class="icon" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <div class="st-body">
+          <div class="st-val" id="th">0</div>
+          <div class="st-lbl">Часов</div>
+        </div>
+      </article>
+      <article class="st-card">
+        <div class="st-icon st-icon--violet">
+          <svg viewBox="0 0 24 24" class="icon" stroke-width="2">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+        </div>
+        <div class="st-body">
+          <div class="st-val" id="tm">0</div>
+          <div class="st-lbl">Минут</div>
+        </div>
+      </article>
+      <article class="st-card">
+        <div class="st-icon st-icon--cyan">
+          <svg viewBox="0 0 24 24" class="icon" stroke-width="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+        </div>
+        <div class="st-body">
+          <div class="st-val" id="ts">0</div>
+          <div class="st-lbl">Секунд</div>
+        </div>
+      </article>
+      <article class="st-card">
+        <div class="st-icon st-icon--amber">
+          <svg viewBox="0 0 24 24" class="icon" stroke-width="2">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </div>
+        <div class="st-body">
+          <div class="st-val" id="hb">0</div>
+          <div class="st-lbl">Ударов сердца</div>
+        </div>
+      </article>
+    </section>
+
+    <!-- Quote -->
+    <section class="card quote-card" aria-label="Цитата">
+      <svg class="quote-mark" viewBox="0 0 24 24" aria-hidden="true">
+        <path class="icon-fill" d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/>
+        <path class="icon-fill" d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/>
+      </svg>
+      <p class="quote-text" id="q">Загрузка...</p>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="pill pill--ghost">
+        <svg viewBox="0 0 24 24" class="icon" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <span>Прошло дней: <b id="daysPassed">0</b></span>
+      </div>
+      <div class="pill pill--glow">
+        <svg viewBox="0 0 24 24" class="icon" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+        </svg>
+        <span>23.07.2026, 20:49 МСК</span>
+      </div>
+    </footer>
   </main>
 
   <script>
-    // ===== CONFIG =====
+    /* ===== CONFIG ===== */
     const TARGET = new Date(Date.UTC(2026, 6, 23, 17, 49, 0));
     const START  = new Date(Date.UTC(2026, 2, 20, 0, 0, 0));
-    const TOTAL_DURATION = TARGET - START;
-    
-    const Q = [
-      ["Расстояние это просто проверка, как далеко может зайти любовь.", "💫"],
-      ["Я несу тебя в своем сердце. Я никогда не бываю без тебя.", "💖"],
-      ["Ожидание делает встречу еще прекраснее.", "🌟"],
-      ["Каждый закат приближает нас на один день к встрече.", "🌅"],
-      ["Ты мой сегодня и все мои завтра.", "🔮"],
-      ["Лучшее еще впереди.", "✨"],
-      ["Скоро. Совсем скоро. И навсегда.", "💕"],
-      ["Ты стоишь каждой секунды ожидания.", "💌"]
+    const TOTAL  = TARGET - START;
+    const CIRC   = 2 * Math.PI * 42; // ≈ 263.89
+
+    const QUOTES = [
+      "Расстояние — это просто проверка, как далеко может зайти любовь.",
+      "Я несу тебя в своем сердце. Я никогда не бываю без тебя.",
+      "Ожидание делает встречу еще прекраснее.",
+      "Каждый закат приближает нас на один день к встрече.",
+      "Ты мой сегодня и все мои завтра.",
+      "Лучшее еще впереди.",
+      "Скоро. Совсем скоро. И навсегда.",
+      "Ты стоишь каждой секунды ожидания."
     ];
-    
-    const E = {};
-    function id(v) { return document.getElementById(v); }
-    
-    function cacheElements() {
-      const ids = ["d","h","m","s","rd","rh","rm","rs","msk","fill","pct","th","tm","ts","hb","q","qe","load","overlay","daysPassed","app"];
-      ids.forEach(key => E[key] = id(key));
+
+    /* ===== ELEMENT CACHE ===== */
+    const $ = {};
+    function cache() {
+      ["d","h","m","s","rd","rh","rm","rs","msk","fill","pct",
+       "th","tm","ts","hb","q","loader","overlay","daysPassed"
+      ].forEach(id => { $[id] = document.getElementById(id); });
     }
-    
-    function pad(v, n) { return String(v).padStart(n, "0"); }
-    
-    // MSK (UTC+3) helper
-    function toMSK(date) { return new Date(date.getTime() + 3 * 3600000); }
-    function formatMSKTime(date) {
-      const m = toMSK(date);
-      return `${pad(m.getUTCHours(),2)}:${pad(m.getUTCMinutes(),2)}:${pad(m.getUTCSeconds(),2)}`;
+
+    /* ===== HELPERS ===== */
+    const pad = (v, n) => String(v).padStart(n, "0");
+    const toMSK = d => new Date(d.getTime() + 3 * 3600000);
+    function fmtMSK(d) {
+      const m = toMSK(d);
+      return pad(m.getUTCHours(),2) + ":" + pad(m.getUTCMinutes(),2) + ":" + pad(m.getUTCSeconds(),2);
     }
-    
-    // ===== CORE =====
+
+    /* ===== RING ===== */
+    function setRing(el, frac) {
+      if (!el) return;
+      el.style.strokeDashoffset = CIRC * (1 - Math.min(Math.max(frac, 0), 1));
+    }
+
+    /* ===== TICK ===== */
     function tick() {
       try {
         const now = new Date();
         const diff = TARGET - now;
-        if (E.msk) E.msk.textContent = formatMSKTime(now);
-                if (diff <= 0) {
-          if (E.overlay) { E.overlay.classList.add("on"); E.overlay.setAttribute("aria-hidden","false"); }
-          set(0,0,0,0); updateProgress(100);
+
+        if ($.msk) $.msk.textContent = fmtMSK(now);
+
+        if (diff <= 0) {
+          if ($.overlay) { $.overlay.classList.add("active"); $.overlay.setAttribute("aria-hidden","false"); }
+          setVals(0,0,0,0);
+          setRing($.rd, 1); setRing($.rh, 1); setRing($.rm, 1); setRing($.rs, 1);
+          updProg(100);
           return;
         }
-        
-        const t = Math.floor(diff/1000);
-        const d = Math.floor(t/86400), h = Math.floor((t%86400)/3600), m = Math.floor((t%3600)/60), s = t%60;
-        set(d,h,m,s); updateRings(d,h,m,s);
-        
-        const progress = Math.min(Math.max(((now - START) / TOTAL_DURATION) * 100, 0), 100);
-        updateProgress(progress);
-        
-        if (E.th) E.th.textContent = Math.floor(t/3600).toLocaleString("ru-RU");
-        if (E.tm) E.tm.textContent = Math.floor(t/60).toLocaleString("ru-RU");
-        if (E.ts) E.ts.textContent = t.toLocaleString("ru-RU");
-        if (E.hb) E.hb.textContent = Math.floor(t*1.2).toLocaleString("ru-RU");
-        if (E.daysPassed) {
-          const dp = Math.floor((now - START) / 86400000);
-          E.daysPassed.textContent = Math.max(0, dp);
+
+        const t = Math.floor(diff / 1000);
+        const d = Math.floor(t / 86400);
+        const h = Math.floor((t % 86400) / 3600);
+        const m = Math.floor((t % 3600) / 60);
+        const s = t % 60;
+
+        setVals(d, h, m, s);
+        setRing($.rd, (d % 365) / 365);
+        setRing($.rh, h / 24);
+        setRing($.rm, m / 60);
+        setRing($.rs, s / 60);
+
+        const prog = Math.min(Math.max(((now - START) / TOTAL) * 100, 0), 100);
+        updProg(prog);
+
+        if ($.th) $.th.textContent = Math.floor(t / 3600).toLocaleString("ru-RU");
+        if ($.tm) $.tm.textContent = Math.floor(t / 60).toLocaleString("ru-RU");
+        if ($.ts) $.ts.textContent = t.toLocaleString("ru-RU");
+        if ($.hb) $.hb.textContent = Math.floor(t * 1.2).toLocaleString("ru-RU");
+
+        if ($.daysPassed) {
+          $.daysPassed.textContent = Math.max(0, Math.floor((now - START) / 86400000));
         }
-      } catch (e) { console.error("tick error:", e); }
+      } catch (e) { console.error("tick:", e); }
     }
-    
-    function set(d,h,m,s) {
-      if(E.d) E.d.textContent = pad(d,3);
-      if(E.h) E.h.textContent = pad(h,2);
-      if(E.m) E.m.textContent = pad(m,2);
-      if(E.s) E.s.textContent = pad(s,2);
+
+    function setVals(d, h, m, s) {
+      if ($.d) $.d.textContent = pad(d, 3);
+      if ($.h) $.h.textContent = pad(h, 2);
+      if ($.m) $.m.textContent = pad(m, 2);
+      if ($.s) $.s.textContent = pad(s, 2);
     }
-    
-    function updateRings(d,h,m,s) {
-      const c = 97.4;
-      if(E.rd) E.rd.style.strokeDashoffset = c - (c * ((d % 365) / 365));
-      if(E.rh) E.rh.style.strokeDashoffset = c - (c * (h / 24));
-      if(E.rm) E.rm.style.strokeDashoffset = c - (c * (m / 60));
-      if(E.rs) E.rs.style.strokeDashoffset = c - (c * (s / 60));
+
+    function updProg(pct) {
+      if ($.fill) $.fill.style.width = pct + "%";
+      if ($.pct)  $.pct.textContent = pct.toFixed(4) + "%";
+      const track = $.fill && $.fill.parentElement;
+      if (track) track.setAttribute("aria-valuenow", Math.round(pct));
     }
-    
-    function updateProgress(pct) {
-      if(E.fill) E.fill.style.width = pct + "%";
-      if(E.pct) E.pct.textContent = pct.toFixed(4) + "%";
-      if(E.fill?.parentElement) E.fill.parentElement.setAttribute("aria-valuenow", Math.round(pct));
-    }
-    
-    // ===== QUOTES =====
+
+    /* ===== QUOTES ===== */
     let qi = 0;
-    function rotateQ() {
-      if(!E.q) return;
-      E.q.classList.add("hide");      setTimeout(() => {
-        E.q.textContent = Q[qi][0];
-        if(E.qe) E.qe.textContent = Q[qi][1];
-        E.q.classList.remove("hide");
-        qi = (qi + 1) % Q.length;
+    function rotateQuote() {
+      if (!$.q) return;
+      $.q.classList.add("hide");
+      setTimeout(() => {
+        $.q.textContent = QUOTES[qi];
+        $.q.classList.remove("hide");
+        qi = (qi + 1) % QUOTES.length;
       }, 320);
     }
-    
-    // ===== HEARTS =====
-    const hearts = ["💖","💕","💗","💓","🩷","🦋","🌸"];
-    function spawn() {
+
+    /* ===== PARTICLES ===== */
+    const pColors = [
+      "rgba(251,113,133,0.55)",
+      "rgba(167,139,250,0.45)",
+      "rgba(103,232,249,0.4)",
+      "rgba(251,191,36,0.4)"
+    ];
+
+    function spawnParticle() {
       if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
       try {
-        const h = document.createElement("div");
-        h.className = "heart";
-        h.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-        h.style.left = Math.random() * 100 + "vw";
-        h.style.fontSize = (14 + Math.random() * 20) + "px";
-        h.style.setProperty("--d", (6 + Math.random() * 8) + "s");
-        document.body.appendChild(h);
-        setTimeout(() => h.remove(), 14000);
+        const el = document.createElement("div");
+        const isHeart = Math.random() < 0.2; // 20% chance of heart shape
+
+        if (isHeart) {
+          // SVG heart particle
+          el.className = "particle particle--heart";
+          const size = 10 + Math.random() * 10;
+          const color = pColors[Math.floor(Math.random() * pColors.length)];
+          el.innerHTML = `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
+          el.style.left = Math.random() * 100 + "vw";
+          el.style.bottom = "0";
+          const dur = 12 + Math.random() * 14;
+          el.style.setProperty("--dur", dur + "s");
+          el.style.setProperty("--op", (0.3 + Math.random() * 0.3).toFixed(2));
+        } else {
+          // Circle particle
+          el.className = "particle";
+          const size = 2 + Math.random() * 3;
+          el.style.width = size + "px";
+          el.style.height = size + "px";
+          el.style.left = Math.random() * 100 + "vw";
+          el.style.bottom = "0";
+          const color = pColors[Math.floor(Math.random() * pColors.length)];
+          el.style.background = color;
+          el.style.boxShadow = "0 0 " + (size * 3) + "px " + color;
+          const dur = 10 + Math.random() * 16;
+          el.style.setProperty("--dur", dur + "s");
+          el.style.setProperty("--op", (0.25 + Math.random() * 0.35).toFixed(2));
+        }
+
+        document.body.appendChild(el);
+        const dur = parseFloat(el.style.getPropertyValue("--dur"));
+        setTimeout(() => el.remove(), (dur + 1) * 1000);
       } catch(e) {}
     }
-    
-    // ===== INIT =====
+
+    /* ===== INIT ===== */
     function hideLoader() {
-      if(E.load) {
-        E.load.classList.add("hide");
-        setTimeout(() => E.load?.remove(), 800);
+      if ($.loader) {
+        $.loader.classList.add("hide");
+        setTimeout(() => { if ($.loader) $.loader.remove(); }, 700);
       }
     }
-    
-    function initApp() {
+
+    function init() {
       try {
-        cacheElements();
-        setTimeout(hideLoader, 400); // Guarantee loader hides
+        cache();
+        setTimeout(hideLoader, 350);
+
         tick();
-        rotateQ();
-        
+        rotateQuote();
+
         setInterval(tick, 1000);
-        setInterval(rotateQ, 8000);
-        setInterval(spawn, 3000);
-        setTimeout(spawn, 500);
-        setTimeout(spawn, 1200);
-        
-        if(E.overlay) E.overlay.setAttribute("aria-hidden","true");
-        console.log("✅ Dashboard initialized");
-      } catch(err) {
-        console.error("💥 Init failed:", err);
-        hideLoader();      }
+        setInterval(rotateQuote, 8000);
+        setInterval(spawnParticle, 2800);
+        // Initial burst
+        setTimeout(spawnParticle, 400);
+        setTimeout(spawnParticle, 900);
+        setTimeout(spawnParticle, 1400);
+        setTimeout(spawnParticle, 2000);
+
+        if ($.overlay) $.overlay.setAttribute("aria-hidden", "true");
+      } catch (e) {
+        console.error("init:", e);
+        hideLoader();
+      }
     }
-    
-    // Robust ready handler (covers DOMContentLoaded, load, and fallback timeout)
+
+    // Robust ready handler
     function ready(fn) {
-      if (document.readyState !== "loading") { setTimeout(fn, 50); } 
-      else { document.addEventListener("DOMContentLoaded", fn); }
+      if (document.readyState !== "loading") setTimeout(fn, 50);
+      else document.addEventListener("DOMContentLoaded", fn);
       window.addEventListener("load", fn);
-      setTimeout(fn, 1500); // Fallback for static hosts/caching quirks
+      setTimeout(fn, 1500); // Fallback
     }
-    
-    ready(initApp);
+
+    ready(init);
   </script>
 </body>
 </html>

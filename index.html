@@ -6,30 +6,24 @@
   <title>До встречи | Сквозь пространство и время</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='38' fill='none' stroke='%23ff2a5f' stroke-width='4'/><path d='M50 32 C42 18, 20 22, 35 46 L50 65 L65 46 C80 22, 58 18, 50 32 Z' fill='%23ff2a5f'/></svg>">
   
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
   
-  <!-- Tailwind Browser CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
   <style>
-    /* ===== THEME VARIABLES ===== */
     :root {
       --accent-rgb: 255, 42, 95;
       --accent-secondary-rgb: 168, 85, 247;
-      
       --bg-color: #07070a;
       --card-bg: rgba(13, 13, 20, 0.45);
       --card-bg-hover: rgba(20, 20, 30, 0.6);
       --card-border: rgba(255, 255, 255, 0.05);
-      
       --font-space: 'Space Grotesk', sans-serif;
       --font-plus: 'Plus Jakarta Sans', sans-serif;
     }
 
-    /* ===== GLOBAL TRANSITIONS ===== */
     * {
       transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
       outline: none;
@@ -37,36 +31,31 @@
       box-sizing: border-box;
     }
 
-    /* ===== VIEWPORT FIX FOR MOBILE BROWSERS ===== */
     html, body {
       position: fixed;
       width: 100%;
-      height: 100%;
-      height: 100dvh; /* Ключевое исправление для динамической высоты */
+      height: 100dvh;
       overflow: hidden;
       background-color: var(--bg-color);
       color: #f4f4f7;
       font-family: var(--font-plus);
-      overscroll-behavior: none;      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: none;
     }
 
-    /* ===== CANVAS LAYER ===== */
     #particle-canvas {
       position: absolute;
       inset: 0;
       z-index: 0;
       pointer-events: none;
-      opacity: 0.85;
-    }
+      opacity: 0.85;    }
 
-    /* ===== GLASSMORPHISM ===== */
     .glass-panel {
       background: var(--card-bg);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--card-border);
-      border-radius: 20px;
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+      border-radius: 18px;
+      box-shadow: 0 6px 32px 0 rgba(0, 0, 0, 0.35);
     }
 
     .glass-panel-interactive {
@@ -78,16 +67,7 @@
       transform: scale(0.97);
       background: rgba(255, 255, 255, 0.06);
     }
-    @media (hover: hover) {
-      .glass-panel-interactive:hover {
-        transform: translateY(-2px);
-        background: var(--card-bg-hover);
-        border-color: rgba(var(--accent-rgb), 0.25);
-        box-shadow: 0 12px 40px 0 rgba(var(--accent-rgb), 0.08);
-      }
-    }
 
-    /* ===== TEXT GRADIENT ===== */
     .text-gradient {
       background: linear-gradient(135deg, rgb(255, 255, 255) 10%, rgba(var(--accent-rgb), 1) 60%, rgba(var(--accent-secondary-rgb), 1) 100%);
       -webkit-background-clip: text;
@@ -95,160 +75,89 @@
       color: transparent;
     }
 
-    /* ===== RADIAL PROGRESS RINGS ===== */
-    .svg-ring {      transform: rotate(-90deg);
-      transform-origin: 50% 50%;
-    }
-    .svg-ring-bg {
-      fill: none;
-      stroke: rgba(255, 255, 255, 0.03);
-      stroke-width: 3;
-    }
+    .svg-ring { transform: rotate(-90deg); transform-origin: 50% 50%; }
+    .svg-ring-bg { fill: none; stroke: rgba(255, 255, 255, 0.03); stroke-width: 3; }
     .svg-ring-fg {
       fill: none;
       stroke: url(#ring-gradient);
       stroke-width: 3;
       stroke-linecap: round;
-      filter: drop-shadow(0 0 6px rgba(var(--accent-rgb), 0.5));
+      filter: drop-shadow(0 0 6px rgba(var(--accent-rgb), 0.4));
       transition: stroke-dashoffset 0.35s linear, filter 0.5s ease;
     }
 
-    /* ===== DYNAMIC QUOTE TYPOGRAPHY ===== */
-    #quote-display {
-      transition: all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
-    }
-    body[data-mood="miss"] #quote-display {
-      font-style: italic;
-      font-weight: 300;
-      letter-spacing: 0.02em;
-      opacity: 0.85;
-      filter: blur(0.3px);
-    }
-    body[data-mood="love"] #quote-display {
-      font-weight: 500;
-      background: linear-gradient(135deg, #fff 20%, rgba(var(--accent-rgb), 1) 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-    body[data-mood="dream"] #quote-display {
+    /* ===== ЦИТАТЫ: АДАПТИВНЫЙ БЛОК ДЛЯ iPHONE 13 & S25 ===== */
+    /* На iPhone 13: высота экрана = ~780px (включая safe area), мы оставляем 120px для футера и 80px для заголовка → ~580px для контента */
+    section[aria-label="Романтическое послание"] {
+      flex: 1;
+      min-height: auto;
+      max-height: 140px; /* Не больше 140px — это комфортно для чтения на 6.1" */
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }    #quote-display {
+      font-size: 14px;
+      line-height: 1.5;
       font-weight: 400;
-      letter-spacing: 0.08em;
-      opacity: 0.75;
-    }
-    body[data-mood="warmth"] #quote-display {
-      font-weight: 600;
-      text-shadow: 0 2px 12px rgba(var(--accent-rgb), 0.3);
-      letter-spacing: -0.01em;
+      color: rgba(244, 244, 247, 0.92);
+      text-align: left;
+      margin: 0;
+      white-space: normal;
+      word-break: break-word;
+      -webkit-font-smoothing: antialiased;
+      /* Убрали все эффекты, которые ломают читаемость на iOS */
     }
 
-    /* ===== SKY CYCLE TRANSITIONS ===== */
-    #glow-orb-1, #glow-orb-2 {
-      transition: background 2s ease-in-out !important;
-    }
-    /* ===== SAFE AREA & COMPACT SCREEN FIXES ===== */
+    /* DYNAMIC QUOTE TYPOGRAPHY — только цвет, без размытия/курсива */
+    body[data-mood="miss"] #quote-display { color: rgba(255, 150, 150, 0.95); }
+    body[data-mood="love"] #quote-display { color: rgba(255, 255, 255, 0.95); background: none; }
+    body[data-mood="dream"] #quote-display { color: rgba(100, 220, 255, 0.95); }
+    body[data-mood="warmth"] #quote-display { color: rgba(255, 220, 150, 0.95); }
+
+    #glow-orb-1, #glow-orb-2 { transition: background 2s ease-in-out !important; }
+
     .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
-
-    @media (max-height: 700px) {
-      main { 
-        padding-top: 8px !important; 
-        padding-bottom: calc(8px + env(safe-area-inset-bottom)) !important; 
-        gap: 0 !important;
-      }
-      .header-spacing { margin-bottom: 2px !important; }
-      header h1 { font-size: 1.5rem !important; line-height: 1.1 !important; }
-      header p { display: none !important; }
-      
-      /* Сжимаем блок времени Москвы */
-      div.glass-panel.px-4.py-2\.5 { 
-        padding: 6px 12px !important; 
-        margin-bottom: 4px !important; 
-      }
-      
-      /* Таймеры становятся компактнее */
-      .grid-cols-4 { gap: 4px !important; margin-bottom: 4px !important; }
-      .grid-cols-4 article { padding: 4px !important; border-radius: 14px !important; }
-      .grid-cols-4 svg { width: 40px !important; height: 40px !important; }
-      .grid-cols-4 span.font-space.text-lg { font-size: 0.85rem !important; }
-      .grid-cols-4 span.text-\[8px\] { font-size: 6px !important; margin-top: 1px !important; }
-      
-      /* Настроения */
-      section.mb-3 { margin-bottom: 4px !important; }
-      .grid-cols-4.gap-2 button { padding: 6px 2px !important; }
-      .grid-cols-4.gap-2 span.text-base { font-size: 1rem !important; margin-bottom: 0 !important; }
-      
-      /* Прогресс бар */
-      section.glass-panel.p-4 { padding: 8px 12px !important; gap: 4px !important; margin-bottom: 4px !important; }
-      
-      /* Статистика - максимальное сжатие */
-      .stats-spacing { gap: 3px !important; margin-bottom: 3px !important; }
-      .stats-spacing .glass-panel { padding: 4px 8px !important; gap: 6px !important; }
-      .stats-spacing .w-8 { width: 20px !important; height: 20px !important; min-width: 20px !important; }
-      .stats-spacing .text-\[9px\] { font-size: 7px !important; }
-      .stats-spacing .text-xs { font-size: 10px !important; }
-      
-      /* Цитата - минимум места */
-      section[aria-label="Романтическое послание"] { 
-        min-height: 44px !important; 
-        padding: 8px 10px !important; 
-        margin-bottom: 4px !important;
-      }
-      #quote-display { font-size: 11px !important; line-height: 1.3 !important; }
-            /* Футер гарантированно виден */
-      footer { 
-        padding-top: 2px !important; 
-        gap: 4px !important;
-      }
-      footer .glass-panel { 
-        padding: 3px 8px !important; 
-        font-size: 9px !important; 
-      }
-    }
   </style>
 </head>
 <body data-mood="love">
 
   <canvas id="particle-canvas"></canvas>
 
-  <!-- Ambient Light Sources -->
   <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
-    <div id="glow-orb-1" class="absolute rounded-full filter blur-[120px] opacity-30" style="width: 400px; height: 400px; top: -10%; left: -10%; background: rgba(var(--accent-rgb), 0.12);"></div>
-    <div id="glow-orb-2" class="absolute rounded-full filter blur-[120px] opacity-20" style="width: 350px; height: 350px; bottom: -5%; right: -10%; background: rgba(var(--accent-secondary-rgb), 0.12);"></div>
+    <div id="glow-orb-1" class="absolute rounded-full filter blur-[120px] opacity-30" style="width: 380px; height: 380px; top: -12%; left: -12%; background: rgba(var(--accent-rgb), 0.12);"></div>
+    <div id="glow-orb-2" class="absolute rounded-full filter blur-[120px] opacity-20" style="width: 320px; height: 320px; bottom: -8%; right: -12%; background: rgba(var(--accent-secondary-rgb), 0.12);"></div>
   </div>
 
   <!-- PRELOADER -->
   <div id="loader" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#07070a] transition-all duration-700">
-    <div class="relative flex items-center justify-center mb-6">
-      <div class="absolute w-20 h-20 rounded-full border-2 border-pink-500/20 animate-ping"></div>
-      <svg class="w-12 h-12 text-pink-500 animate-pulse" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-      </svg>
+    <div class="relative flex items-center justify-center mb-4">
+      <div class="absolute w-18 h-18 rounded-full border-2 border-pink-500/20 animate-ping"></div>
+      <svg class="w-12 h-12 text-pink-500 animate-pulse" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
     </div>
-    <span class="text-xs uppercase tracking-[0.25em] font-medium text-white/40 font-space animate-pulse">Синхронизация времени...</span>
+    <span class="text-xs uppercase tracking-[0.25em] font-medium text-white/40 font-space animate-pulse">Синхронизация...</span>
   </div>
 
   <!-- CELEBRATION OVERLAY -->
   <div id="celebration-overlay" class="fixed inset-0 z-40 hidden flex-col items-center justify-center text-center p-6 bg-[#07070ac7] backdrop-blur-2xl transition-all duration-1000">
-    <div class="glass-panel p-10 max-w-sm border-pink-500/30 shadow-2xl flex flex-col items-center">
-      <div class="w-20 h-20 rounded-full bg-pink-500/10 flex items-center justify-center border border-pink-500/40 mb-6 animate-bounce">
-        <svg class="w-10 h-10 text-pink-500" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-        </svg>
+    <div class="glass-panel p-8 max-w-xs border-pink-500/30 shadow-2xl flex flex-col items-center">
+      <div class="w-20 h-20 rounded-full bg-pink-500/10 flex items-center justify-center border border-pink-500/40 mb-4 animate-bounce">
+        <svg class="w-10 h-10 text-pink-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
       </div>
-      <h2 class="font-space text-3xl font-bold text-gradient mb-2">Время пришло!</h2>
-      <p class="text-sm text-white/75 mb-6 leading-relaxed">Каждое мгновение ожидания привело нас сюда. Мы наконец-то вместе.</p>
-      <button onclick="resetCelebration()" class="px-6 py-2.5 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 hover:brightness-110 transition text-xs font-bold tracking-wider uppercase font-space shadow-lg">Закрыть окно</button>
+      <h2 class="font-space text-2xl font-bold text-gradient mb-2">Время пришло!</h2>
+      <p class="text-sm text-white/75 mb-5 leading-relaxed">Каждое мгновение ожидания привело нас сюда.</p>      <button onclick="resetCelebration()" class="px-6 py-2.5 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 hover:brightness-110 transition text-xs font-bold tracking-wider uppercase font-space shadow-lg">Закрыть</button>
     </div>
   </div>
 
   <!-- MEMORY CAPTURE OVERLAY -->
   <div id="memory-overlay" class="fixed inset-0 z-50 hidden flex-col items-center justify-center p-6 bg-black/80 backdrop-blur-xl opacity-0 transition-opacity duration-500 pointer-events-none">
-    <div class="relative w-full max-w-[320px] aspect-[3/4] glass-panel border border-white/10 shadow-2xl overflow-hidden transform scale-95 transition-transform duration-500 cubic-bezier(0.34, 1.56, 0.64, 1)">      <div class="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-10 pointer-events-none bg-[length:100%_2px,3px_100%]"></div>
+    <div class="relative w-full max-w-[300px] aspect-[3/4] glass-panel border border-white/10 shadow-2xl overflow-hidden transform scale-95 transition-transform duration-500 cubic-bezier(0.34, 1.56, 0.64, 1)">
+      <div class="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-10 pointer-events-none bg-[length:100%_2px,3px_100%]"></div>
       <div class="absolute inset-0 flex flex-col items-center justify-center p-8 text-center z-20">
-        <p id="mem-quote" class="text-lg font-medium italic text-white/90 leading-relaxed mb-8 line-clamp-4">...</p>
-        <div class="flex flex-col items-center gap-1 mb-8">
+        <p id="mem-quote" class="text-base font-medium text-white/90 leading-relaxed mb-6 line-clamp-4">...</p>
+        <div class="flex flex-col items-center gap-1 mb-6">
           <span class="text-[10px] uppercase tracking-[0.3em] text-white/40 font-space">Осталось</span>
-          <span id="mem-timer" class="text-4xl font-bold font-space tracking-tighter text-gradient">00:00:00</span>
+          <span id="mem-timer" class="text-3xl font-bold font-space tracking-tighter text-gradient">00:00:00</span>
         </div>
         <div class="flex items-center gap-3 text-[10px] uppercase tracking-widest text-white/50 font-space border-t border-white/10 pt-4 w-full justify-center">
           <span id="mem-mood">Люблю</span>
@@ -267,11 +176,11 @@
   </div>
 
   <!-- MAIN APP CONTAINER -->
-  <main class="relative z-10 w-full h-full flex flex-col justify-between px-4 py-6 md:py-8 max-w-md mx-auto select-none">
+  <main class="relative z-10 w-full h-full flex flex-col justify-between px-4 py-4 max-w-md mx-auto select-none">
     
     <!-- HEADER -->
-    <header class="w-full text-center header-spacing mb-4 flex flex-col items-center shrink-0">
-      <div class="flex items-center justify-center w-full max-w-xs bg-white/[0.02] border border-white/[0.05] rounded-full py-1.5 px-4 mb-3">
+    <header class="w-full text-center flex flex-col items-center shrink-0 mb-3">
+      <div class="flex items-center justify-center w-full max-w-[240px] bg-white/[0.02] border border-white/[0.05] rounded-full py-1.5 px-4 mb-3">
         <div class="flex items-center gap-2">
           <span class="relative flex h-2 w-2">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[rgb(var(--accent-rgb))] opacity-75"></span>
@@ -280,22 +189,19 @@
           <span id="app-status" class="text-[10px] uppercase tracking-widest font-space font-semibold text-white/50">СВЯЗЬ АКТИВНА</span>
         </div>
       </div>
-      <h1 class="font-space text-3xl md:text-4xl font-bold tracking-tight text-gradient leading-none mb-1">До встречи</h1>
-      <p class="text-white/40 text-[11px] tracking-wider uppercase font-space">В бесконечности времени и любви</p>
+      <h1 class="font-space text-3xl font-bold tracking-tight text-gradient leading-none">До встречи</h1>
     </header>
 
     <!-- MOSCOW TIME BAR -->
     <div class="w-full glass-panel px-4 py-2.5 flex items-center justify-between mb-3 shrink-0">
-      <div class="flex items-center gap-2 text-white/50 text-xs">
-        <svg class="w-4 h-4 text-[rgb(var(--accent-rgb))] animate-spin-slow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10" stroke-dasharray="6 4"/>
-        </svg>
-        <span class="tracking-wide text-white/70 font-medium text-[11px]">ВРЕМЯ В МОСКВЕ</span>
+      <div class="flex items-center gap-2 text-white/50 text-xs">        <svg class="w-4 h-4 text-[rgb(var(--accent-rgb))] animate-spin-slow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="6 4"/></svg>
+        <span class="tracking-wide text-white/70 font-medium text-[11px]">МОСКВА, МСК</span>
       </div>
-      <div class="font-space font-bold text-xs tracking-widest text-white bg-white/[0.04] py-1 px-3 rounded-full border border-white/[0.05]" id="msk-clock">00:00:00</div>    </div>
+      <div class="font-space font-bold text-xs tracking-widest text-white bg-white/[0.04] py-1 px-3 rounded-full border border-white/[0.05]" id="msk-clock">00:00:00</div>
+    </div>
 
     <!-- COUNTDOWN GRID -->
-    <section class="grid grid-cols-4 gap-2.5 mb-3 shrink-0" role="timer" aria-label="Таймер">
+    <section class="grid grid-cols-4 gap-2.5 mb-3 shrink-0" role="timer">
       <article class="glass-panel p-2.5 flex flex-col items-center justify-between relative overflow-hidden">
         <div class="relative w-16 h-16 flex items-center justify-center">
           <svg class="absolute inset-0 w-full h-full svg-ring" viewBox="0 0 100 100">
@@ -304,53 +210,53 @@
           </svg>
           <span class="font-space text-lg font-bold tracking-tighter text-white" id="display-d">000</span>
         </div>
-        <span class="text-[8px] font-bold uppercase tracking-[0.15em] text-white/30 mt-2 font-space">Дней</span>
+        <span class="text-[8px] font-bold uppercase tracking-[0.15em] text-white/30 mt-2 font-space">ДНЕЙ</span>
       </article>
       <article class="glass-panel p-2.5 flex flex-col items-center justify-between relative overflow-hidden">
         <div class="relative w-16 h-16 flex items-center justify-center">
           <svg class="absolute inset-0 w-full h-full svg-ring" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" class="svg-ring-bg"/><circle cx="50" cy="50" r="44" class="svg-ring-fg" id="ring-h" stroke-dasharray="276.46" stroke-dashoffset="276.46"/></svg>
           <span class="font-space text-lg font-bold tracking-tighter text-white" id="display-h">00</span>
         </div>
-        <span class="text-[8px] font-bold uppercase tracking-[0.15em] text-white/30 mt-2 font-space">Часов</span>
+        <span class="text-[8px] font-bold uppercase tracking-[0.15em] text-white/30 mt-2 font-space">ЧАСОВ</span>
       </article>
       <article class="glass-panel p-2.5 flex flex-col items-center justify-between relative overflow-hidden">
         <div class="relative w-16 h-16 flex items-center justify-center">
           <svg class="absolute inset-0 w-full h-full svg-ring" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" class="svg-ring-bg"/><circle cx="50" cy="50" r="44" class="svg-ring-fg" id="ring-m" stroke-dasharray="276.46" stroke-dashoffset="276.46"/></svg>
           <span class="font-space text-lg font-bold tracking-tighter text-white" id="display-m">00</span>
         </div>
-        <span class="text-[8px] font-bold uppercase tracking-[0.15em] text-white/30 mt-2 font-space">Минут</span>
+        <span class="text-[8px] font-bold uppercase tracking-[0.15em] text-white/30 mt-2 font-space">МИНУТ</span>
       </article>
       <article class="glass-panel p-2.5 flex flex-col items-center justify-between relative overflow-hidden">
         <div class="relative w-16 h-16 flex items-center justify-center">
           <svg class="absolute inset-0 w-full h-full svg-ring" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" class="svg-ring-bg"/><circle cx="50" cy="50" r="44" class="svg-ring-fg" id="ring-s" stroke-dasharray="276.46" stroke-dashoffset="276.46"/></svg>
           <span class="font-space text-lg font-bold tracking-tighter text-white" id="display-s">00</span>
         </div>
-        <span class="text-[8px] font-bold uppercase tracking-[0.15em] text-white/30 mt-2 font-space">Секунд</span>
+        <span class="text-[8px] font-bold uppercase tracking-[0.15em] text-white/30 mt-2 font-space">СЕКУНД</span>
       </article>
     </section>
 
     <!-- MOOD SELECTOR -->
     <section class="mb-3 shrink-0">
       <div class="glass-panel p-3 flex flex-col gap-2">
-        <div class="flex justify-between items-center text-[10px] tracking-widest font-space font-bold text-white/35 uppercase">
-          <span>Связать настроения</span>
-          <span class="text-[rgb(var(--accent-rgb))]">Наш резонанс</span>
+        <div class="flex justify-between items-center text-[10px] tracking-widest font-space font-bold text-white/35 uppercase px-1">
+          <span>НАСТРОЕНИЯ</span>
+          <span class="text-[rgb(var(--accent-rgb))]">РЕЗОНАНС</span>
         </div>
         <div class="grid grid-cols-4 gap-2">
-          <button onclick="setMood('miss')" id="mood-miss" class="glass-panel-interactive py-2 px-1 text-center rounded-xl bg-white/[0.02] border border-white/[0.05] transition-all opacity-70">
-            <span class="block text-base mb-0.5">🥺</span>
-            <span class="text-[8px] font-space text-white/60 uppercase tracking-wider font-semibold">Скучаю</span>
+          <button onclick="setMood('miss')" id="mood-miss" class="glass-panel-interactive py-2 px-1 text-center rounded-xl bg-white/[0.02] border border-white/[0.05] transition-all opacity-70">            <span class="block text-base mb-0.5">🥺</span>
+            <span class="text-[8px] font-space text-white/60 uppercase tracking-wider font-semibold">СКУЧАЮ</span>
           </button>
-          <button onclick="setMood('love')" id="mood-love" class="glass-panel-interactive py-2 px-1 text-center rounded-xl bg-white/[0.02] border border-white/[0.05] transition-all ring-1 ring-[rgba(var(--accent-rgb),0.6)] bg-white/[0.1]">            <span class="block text-base mb-0.5">❤️</span>
-            <span class="text-[8px] font-space text-white/60 uppercase tracking-wider font-semibold">Люблю</span>
+          <button onclick="setMood('love')" id="mood-love" class="glass-panel-interactive py-2 px-1 text-center rounded-xl bg-white/[0.02] border border-white/[0.05] transition-all ring-1 ring-[rgba(var(--accent-rgb),0.6)] bg-white/[0.1]">
+            <span class="block text-base mb-0.5">❤️</span>
+            <span class="text-[8px] font-space text-white/60 uppercase tracking-wider font-semibold">ЛЮБЛЮ</span>
           </button>
           <button onclick="setMood('dream')" id="mood-dream" class="glass-panel-interactive py-2 px-1 text-center rounded-xl bg-white/[0.02] border border-white/[0.05] transition-all opacity-70">
             <span class="block text-base mb-0.5">✨</span>
-            <span class="text-[8px] font-space text-white/60 uppercase tracking-wider font-semibold">Мечтаю</span>
+            <span class="text-[8px] font-space text-white/60 uppercase tracking-wider font-semibold">МЕЧТАЮ</span>
           </button>
           <button onclick="setMood('warmth')" id="mood-warmth" class="glass-panel-interactive py-2 px-1 text-center rounded-xl bg-white/[0.02] border border-white/[0.05] transition-all opacity-70">
             <span class="block text-base mb-0.5">🫂</span>
-            <span class="text-[8px] font-space text-white/60 uppercase tracking-wider font-semibold">Обнял бы</span>
+            <span class="text-[8px] font-space text-white/60 uppercase tracking-wider font-semibold">ОБНЯЛ БЫ</span>
           </button>
         </div>
       </div>
@@ -361,44 +267,43 @@
       <div class="flex justify-between items-center">
         <div class="flex items-center gap-2 text-xs text-white/70 font-medium">
           <svg class="w-4 h-4 text-[rgb(var(--accent-secondary-rgb))]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-          <span>Пройденный путь</span>
+          <span>ПУТЬ</span>
         </div>
-        <span class="font-space font-bold text-sm tracking-tight text-[rgb(var(--accent-rgb))]" id="precise-pct">0.000000%</span>
+        <span class="font-space font-bold text-sm tracking-tight text-[rgb(var(--accent-rgb))]" id="precise-pct">52.48%</span>
       </div>
       <div class="relative w-full h-2.5 bg-white/[0.03] rounded-full overflow-hidden border border-white/[0.05]">
-        <div id="progress-fill" class="absolute top-0 left-0 h-full rounded-full bg-gradient-to-r from-[rgb(var(--accent-rgb))] via-[rgb(var(--accent-secondary-rgb))] to-[#00f2fe] transition-all duration-[60ms] ease-linear shadow-[0_0_12px_rgba(var(--accent-rgb),0.6)]" style="width: 0%;">
+        <div id="progress-fill" class="absolute top-0 left-0 h-full rounded-full bg-gradient-to-r from-[rgb(var(--accent-rgb))] via-[rgb(var(--accent-secondary-rgb))] to-[#00f2fe] transition-all duration-[60ms] ease-linear shadow-[0_0_12px_rgba(var(--accent-rgb),0.6)]" style="width: 52.48%;">
           <div class="absolute inset-0 bg-white/20 animate-pulse"></div>
         </div>
       </div>
       <div class="flex justify-between text-[10px] text-white/30 font-space">
-        <div class="flex flex-col"><span>ИНИЦИАЦИЯ</span><b class="text-white/70 mt-0.5">20.03.2026</b></div>
-        <div class="flex flex-col items-end"><span>ЗАВЕРШЕНИЕ</span><b class="text-white/70 mt-0.5">23.07.2026, 20:49</b></div>
+        <div class="flex flex-col"><span>СТАРТ</span><b class="text-white/70">20.03.2026</b></div>
+        <div class="flex flex-col items-end"><span>ФИНИШ</span><b class="text-white/70">23.07.2026 20:49</b></div>
       </div>
     </section>
 
     <!-- STATS GRID -->
-    <section class="grid grid-cols-2 gap-2.5 mb-3 stats-spacing shrink-0" aria-label="Статистика">
+    <section class="grid grid-cols-2 gap-2.5 mb-3 shrink-0">
       <div class="flex flex-col gap-2">
         <div class="glass-panel px-3 py-2 flex items-center gap-3 bg-white/[0.01]">
           <div class="w-8 h-8 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-500">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           </div>
-          <div class="min-w-0"><span class="block text-[9px] text-white/30 uppercase tracking-wider font-space">Всего часов</span><span class="block font-space text-xs font-bold text-white/90 truncate" id="stat-hours">0</span></div>
+          <div class="min-w-0"><span class="block text-[9px] text-white/30 uppercase tracking-wider font-space">ЧАСОВ</span><span class="block font-space text-xs font-bold text-white/90 truncate" id="stat-hours">1433</span></div>
         </div>
         <div class="glass-panel px-3 py-2 flex items-center gap-3 bg-white/[0.01]">
-          <div class="w-8 h-8 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500">
-            <svg class="w-4 h-4 animate-pulse" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          <div class="w-8 h-8 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500">            <svg class="w-4 h-4 animate-pulse" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
           </div>
-          <div class="min-w-0"><span class="block text-[9px] text-white/30 uppercase tracking-wider font-space">Удары сердца</span><span class="block font-space text-xs font-bold text-white/90 truncate" id="stat-hearts">0</span></div>
-        </div>      </div>
+          <div class="min-w-0"><span class="block text-[9px] text-white/30 uppercase tracking-wider font-space">СЕРДЕЦ</span><span class="block font-space text-xs font-bold text-white/90 truncate" id="stat-hearts">6 197 307</span></div>
+        </div>
+      </div>
       <div class="flex flex-col gap-2">
         <div class="glass-panel px-3 py-2 flex items-center gap-3 bg-white/[0.01]">
           <div class="w-8 h-8 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-500">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           </div>
-          <div class="min-w-0"><span class="block text-[9px] text-white/30 uppercase tracking-wider font-space">Минут ожидания</span><span class="block font-space text-xs font-bold text-white/90 truncate" id="stat-minutes">0</span></div>
+          <div class="min-w-0"><span class="block text-[9px] text-white/30 uppercase tracking-wider font-space">МИНУТ</span><span class="block font-space text-xs font-bold text-white/90 truncate" id="stat-minutes">86 039</span></div>
         </div>
-        <!-- CAPTURE MOMENT BUTTON -->
         <div onclick="captureMoment(event)" class="glass-panel glass-panel-interactive px-3 py-2 flex items-center gap-3 bg-white/[0.02] border-[rgb(var(--accent-rgb))]/20 group">
           <div class="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center text-white/70 group-hover:text-[rgb(var(--accent-rgb))] transition-colors duration-300">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -407,155 +312,100 @@
             </svg>
           </div>
           <div class="min-w-0">
-            <span class="block text-[9px] text-white/40 uppercase tracking-wider font-space font-semibold group-hover:text-white/60 transition-colors">Запечатлеть</span>
-            <span class="block font-space text-xs font-bold text-[rgb(var(--accent-rgb))] truncate">Мгновение</span>
+            <span class="block text-[9px] text-white/40 uppercase tracking-wider font-space font-semibold group-hover:text-white/60 transition-colors">ЗАПЕЧАТЛЕТЬ</span>
+            <span class="block font-space text-xs font-bold text-[rgb(var(--accent-rgb))] truncate">МГНОВЕНИЕ</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- QUOTE SLIDER (FLEXIBLE) -->
-    <section class="relative glass-panel p-3 sm:p-4 flex flex-col justify-between flex-1 min-h-[60px] mb-2 sm:mb-3" aria-label="Романтическое послание">
-      <div class="absolute top-2 right-3 opacity-10 text-white pointer-events-none">
+    <!-- ЦИТАТА: АДАПТИВНЫЙ БЛОК (основное изменение) -->
+    <section class="relative glass-panel p-4 flex flex-col justify-between flex-1 min-h-[0] mb-3" aria-label="Романтическое послание">
+      <div class="absolute top-2.5 right-4 opacity-10 text-white pointer-events-none">
         <svg width="20" height="16" viewBox="0 0 24 18" fill="currentColor"><path d="M0 18h6l4-8V0H0v10h5L3 18H0zm14 0h6l4-8V0h-10v10h5l-2 8z"/></svg>
       </div>
-      <div class="flex-1 flex items-center">
-        <p id="quote-display" class="text-[12px] sm:text-[13px] font-medium text-white/90 leading-snug italic select-all pr-4 transition-all duration-500 opacity-0 transform translate-y-2 line-clamp-3">
-          Загрузка откровения...
-        </p>
-      </div>
-      <div class="w-full h-[1px] bg-white/5 mt-2 relative shrink-0">
+      <p id="quote-display" class="text-[14px] font-medium text-white/92 leading-relaxed italic select-all pr-4">
+        Ожидание — это хрупкий мост любви, который с каждым рассветом становится всё короче.
+      </p>
+      <div class="w-full h-[1px] bg-white/5 mt-3 relative">
         <div id="quote-timer-line" class="absolute top-0 left-0 h-full bg-gradient-to-r from-[rgb(var(--accent-rgb))] to-[rgb(var(--accent-secondary-rgb))] transition-all duration-100 ease-linear" style="width: 0%;"></div>
       </div>
     </section>
 
     <!-- FOOTER -->
-    <footer class="w-full flex items-center justify-between gap-2 mt-auto pt-1 pb-safe shrink-0">
-      <div class="flex items-center gap-1.5 py-1 px-2.5 rounded-full glass-panel bg-white/[0.02] text-[10px] whitespace-nowrap">
-        <svg class="w-3 h-3 text-emerald-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-        <span class="text-white/40 font-space uppercase tracking-wider">Пройдено: <strong class="text-emerald-400 font-bold ml-0.5" id="days-passed-badge">0</strong>дн.</span>
+    <footer class="w-full flex items-center justify-between gap-2 mt-auto pt-2 pb-safe shrink-0">
+      <div class="flex items-center gap-2 py-1 px-3 rounded-full glass-panel bg-white/[0.02] text-xs">
+        <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span class="text-white/40 font-space uppercase tracking-wider">ПРОЙДЕНО: <strong class="text-emerald-400 font-bold ml-1" id="days-passed-badge">65</strong> ДН.</span>
       </div>
-      <div class="flex items-center gap-1.5 py-1 px-2.5 rounded-full glass-panel bg-white/[0.02] text-[10px] whitespace-nowrap">
-        <div class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse shrink-0"></div>
-        <span class="text-white/50 font-space font-medium tracking-wide">23.07.26 20:49 МСК</span>
+      <div class="flex items-center gap-2 py-1 px-3 rounded-full glass-panel bg-white/[0.02] text-xs">
+        <div class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>        <span class="text-white/50 font-space font-medium tracking-wider">23.07.26 20:49 МСК</span>
       </div>
     </footer>
+
   </main>
 
   <script>
-    /* ===== CONSTANTS ===== */
     const TARGET_DATE = new Date(Date.UTC(2026, 6, 23, 17, 49, 0));
     const START_DATE  = new Date(Date.UTC(2026, 2, 20, 0, 0, 0));
     const TOTAL_SPAN  = TARGET_DATE - START_DATE;
     const RING_CIRCUMFERENCE = 276.46;
 
     const PHRASES = [
-      "Всё, что мне нужно — это знать, что в конце этого длинного пути меня ждёшь ты.",
-      "Расстояние измеряется не скучными километрами, а секундами до наших объятий.",
+      "Ожидание — это хрупкий мост любви, который с каждым рассветом становится всё короче.",
       "Ты — моё самое красивое 'скоро' и самое долгожданное в мире 'навсегда'.",
       "Каждый удар моего сердца неумолимо отсчитывает время до нашей встречи.",
       "Мы смотрим на разные города, но засыпаем под одним и тем же звёздным небом.",
-      "Ожидание — это хрупкий мост любви, который с каждым рассветом становится всё короче.",
       "Ты — прекрасная музыка, которая звучит во мне, даже когда весь мир погружён в тишину.",
       "Засыпать с нежной мыслью о тебе — моя самая любимая и неизменная привычка.",
       "Моя любовь к тебе не знает преград, часовых поясов и земных расстояний.",
       "Ты стоишь каждого бесконечного мгновения и каждой секунды этого пути.",
       "Каждое утро я просыпаюсь с улыбкой, ведь я на целый день ближе к тебе.",
-      "Встреча с тобой — это точка, в которой сошлись все мои самые смелые мечты.",
-      "Когда ты рядом, этот безумный мир обретает свои самые тёплые и нежные краски.",
-      "Сквозь любые мили и метели моё преданное сердце всегда летит в твои ладони.",
-      "Любить тебя на расстоянии — это высокое искусство ценить каждое воспоминание.",
-      "Ты — моё яркое солнце, согревающее душу даже в самые холодные дни разлуки.",
-      "Никакое земное расстояние не способно ослабить священное пламя нашей любви.",
-      "Ты заставляешь моё сердце биться чаще, даже находясь за тысячи долгих километров.",
-      "Скоро мы больше никогда не будем прощаться на холодных вокзалах и в аэропортах.",
-      "Твой нежный голос в трубке — мой самый любимый, родной и исцеляющий звук.",
-      "Самое волшебное в мире — знать, что наше общее счастливое будущее уже решено.",
-      "Время без тебя тянется бесконечно, но оно стремительно несёт меня к тебе.",
-      "Ты — моя тихая и уютная гавань, мой единственный дом и моё бесконечное счастье.",
-      "Каждый день долгого ожидания превратит секунду нашей встречи в великий триумф.",
-      "Мы обязательно встретимся, крепко обнимемся и больше никогда в жизни не отпустим."
+      "Встреча с тобой — это точка, в которой сошлись все мои самые смелые мечты."
     ];
 
-    /* ===== STATE ===== */
     let activeMood = 'love';
     let currentQuoteIndex = 0;
     let quoteTimer = 0;
     const quoteInterval = 9000;
     window.lastMoodChange = Date.now();
 
-    /* ===== MOOD THEMES (ENHANCED CONTRAST) ===== */
     const MOOD_THEMES = {
-      miss: {
-        primary: '255, 99, 132',
-        secondary: '190, 24, 93',        status: 'СВЯЗЬ АКТИВНА • СКУЧАЮ',
-        orbIntensity: 0.22
-      },
-      love: {
-        primary: '255, 42, 95',
-        secondary: '168, 85, 247',
-        status: 'СВЯЗЬ АКТИВНА • ЛЮБЛЮ',
-        orbIntensity: 0.20
-      },
-      dream: {
-        primary: '34, 211, 238',
-        secondary: '99, 102, 241',
-        status: 'СВЯЗЬ АКТИВНА • МЕЧТАЮ',
-        orbIntensity: 0.18
-      },
-      warmth: {
-        primary: '251, 191, 36',
-        secondary: '239, 68, 68',
-        status: 'СВЯЗЬ АКТИВНА • ХОЧУ ОБНЯТЬ',
-        orbIntensity: 0.24
-      }
+      miss: { primary: '255, 99, 132', secondary: '190, 24, 93', status: 'СВЯЗЬ • СКУЧАЮ', orbIntensity: 0.22 },
+      love: { primary: '255, 42, 95', secondary: '168, 85, 247', status: 'СВЯЗЬ • ЛЮБЛЮ', orbIntensity: 0.20 },
+      dream: { primary: '34, 211, 238', secondary: '99, 102, 241', status: 'СВЯЗЬ • МЕЧТАЮ', orbIntensity: 0.18 },
+      warmth: { primary: '251, 191, 36', secondary: '239, 68, 68', status: 'СВЯЗЬ • ОБНЯТЬ', orbIntensity: 0.24 }
     };
 
-    /* ===== DOM ELEMENTS ===== */
     const el = {
-      d: document.getElementById('display-d'),
-      h: document.getElementById('display-h'),
-      m: document.getElementById('display-m'),
-      s: document.getElementById('display-s'),
-      ringD: document.getElementById('ring-d'),
-      ringH: document.getElementById('ring-h'),
-      ringM: document.getElementById('ring-m'),
-      ringS: document.getElementById('ring-s'),
-      mskClock: document.getElementById('msk-clock'),
-      precisePct: document.getElementById('precise-pct'),
-      progressFill: document.getElementById('progress-fill'),
-      statHours: document.getElementById('stat-hours'),
-      statMinutes: document.getElementById('stat-minutes'),
-      statHearts: document.getElementById('stat-hearts'),
-      quoteDisplay: document.getElementById('quote-display'),
-      quoteTimerLine: document.getElementById('quote-timer-line'),
-      daysPassedBadge: document.getElementById('days-passed-badge'),
-      appStatus: document.getElementById('app-status'),
-      loader: document.getElementById('loader'),
-      celebrationOverlay: document.getElementById('celebration-overlay')
+      d: document.getElementById('display-d'), h: document.getElementById('display-h'),
+      m: document.getElementById('display-m'), s: document.getElementById('display-s'),
+      ringD: document.getElementById('ring-d'), ringH: document.getElementById('ring-h'),
+      ringM: document.getElementById('ring-m'), ringS: document.getElementById('ring-s'),
+      mskClock: document.getElementById('msk-clock'), precisePct: document.getElementById('precise-pct'),
+      progressFill: document.getElementById('progress-fill'), statHours: document.getElementById('stat-hours'),
+      statMinutes: document.getElementById('stat-minutes'), statHearts: document.getElementById('stat-hearts'),
+      quoteDisplay: document.getElementById('quote-display'), quoteTimerLine: document.getElementById('quote-timer-line'),
+      daysPassedBadge: document.getElementById('days-passed-badge'), appStatus: document.getElementById('app-status'),
+      loader: document.getElementById('loader'), celebrationOverlay: document.getElementById('celebration-overlay')
     };
-
-    /* ===== CANVAS PARTICLES ===== */
     const canvas = document.getElementById('particle-canvas');
-    const ctx = canvas.getContext('2d');    let stars = [];
+    const ctx = canvas.getContext('2d');
+    let stars = [];
     let heartWaves = [];
-    
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
+
+    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
     class Star {
       constructor() { this.reset(); }
       reset() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 1.5 + 0.5;
-        this.speedY = -(Math.random() * 0.2 + 0.05);
-        this.opacity = Math.random() * 0.6 + 0.2;
-        this.blinkSpeed = Math.random() * 0.01 + 0.005;
+        this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 1.5 + 0.5; this.speedY = -(Math.random() * 0.2 + 0.05);
+        this.opacity = Math.random() * 0.6 + 0.2; this.blinkSpeed = Math.random() * 0.01 + 0.005;
       }
       update() {
         this.y += this.speedY;
@@ -563,55 +413,41 @@
         this.opacity += this.blinkSpeed;
         if (this.opacity > 0.85 || this.opacity < 0.15) this.blinkSpeed = -this.blinkSpeed;
       }
-      draw() {
-        ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
-        ctx.fillRect(this.x, this.y, this.size, this.size);
-      }
+      draw() { ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`; ctx.fillRect(this.x, this.y, this.size, this.size); }
     }
 
     class HeartWave {
       constructor(x, y) {
-        this.x = x; this.y = y;
-        this.size = Math.random() * 8 + 10;
-        this.scale = 0.1;
-        this.targetScale = Math.random() * 1.4 + 0.8;
-        this.opacity = 1;
-        this.angle = Math.random() * Math.PI * 2;
-        this.speed = Math.random() * 3 + 1.5;
-        this.vx = Math.cos(this.angle) * this.speed;
-        this.vy = Math.sin(this.angle) * this.speed - 1.0;
-        this.rot = Math.random() * 0.2 - 0.1;
-        this.rotation = 0;
-        this.color = `rgba(${MOOD_THEMES[activeMood].primary}, ${Math.random() * 0.4 + 0.6})`;
+        this.x = x; this.y = y; this.size = Math.random() * 8 + 10;
+        this.scale = 0.1; this.targetScale = Math.random() * 1.4 + 0.8;
+        this.opacity = 1; this.angle = Math.random() * Math.PI * 2;
+        this.speed = Math.random() * 3 + 1.5; this.vx = Math.cos(this.angle) * this.speed;
+        this.vy = Math.sin(this.angle) * this.speed - 1; this.rot = Math.random() * 0.2 - 0.1;
+        this.rotation = 0; this.color = `rgba(${MOOD_THEMES[activeMood].primary}, ${Math.random() * 0.4 + 0.6})`;
       }
       update() {
         this.x += this.vx; this.y += this.vy;
-        this.scale += (this.targetScale - this.scale) * 0.1;        this.rotation += this.rot;
+        this.scale += (this.targetScale - this.scale) * 0.1;
+        this.rotation += this.rot;
         this.opacity -= 0.018;
       }
       draw() {
         if (this.opacity <= 0) return;
-        ctx.save();
-        ctx.translate(this.x, this.y);
-        ctx.rotate(this.rotation);
-        ctx.scale(this.scale, this.scale);
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
+        ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.rotation); ctx.scale(this.scale, this.scale);
+        ctx.fillStyle = this.color; ctx.beginPath();
         ctx.moveTo(0, -this.size / 4);
         ctx.bezierCurveTo(-this.size/2, -this.size, -this.size, -this.size/3, -this.size, 0);
         ctx.bezierCurveTo(-this.size, this.size/3, -this.size/3, this.size/2, 0, this.size);
         ctx.bezierCurveTo(this.size/3, this.size/2, this.size, this.size/3, this.size, 0);
-        ctx.bezierCurveTo(this.size, -this.size/3, this.size/2, -this.size, 0, -this.size/4);
-        ctx.fill();
-        ctx.restore();
+        ctx.bezierCurveTo(this.size, -this.size/3, this.size/2, -this.size, 0, -this.size/4);        ctx.fill(); ctx.restore();
       }
     }
 
-    for (let i = 0; i < 55; i++) stars.push(new Star());
+    for (let i = 0; i < 50; i++) stars.push(new Star());
 
     window.addEventListener('pointerdown', (e) => {
       if (e.target.closest('button') || e.target.closest('.glass-panel-interactive')) return;
-      for (let i = 0; i < 3; i++) heartWaves.push(new HeartWave(e.clientX, e.clientY));
+      for (let i = 0; i < 4; i++) heartWaves.push(new HeartWave(e.clientX, e.clientY));
     });
 
     function animateParticles() {
@@ -625,27 +461,19 @@
     }
     requestAnimationFrame(animateParticles);
 
-    /* ===== MEMORY CAPTURE SYSTEM ===== */
     const memOverlay = document.getElementById('memory-overlay');
-    const memEls = {
-      quote: document.getElementById('mem-quote'),
-      timer: document.getElementById('mem-timer'),
-      mood: document.getElementById('mem-mood'),
-      date: document.getElementById('mem-date')
-    };
+    const memEls = { quote: document.getElementById('mem-quote'), timer: document.getElementById('mem-timer'), mood: document.getElementById('mem-mood'), date: document.getElementById('mem-date') };
 
     function captureMoment(e) {
-      const touchX = e.clientX || (window.innerWidth / 2);      const touchY = e.clientY || (window.innerHeight * 0.6);
-      for (let i = 0; i < 8; i++) heartWaves.push(new HeartWave(touchX, touchY));
-      
+      const touchX = e.clientX || (window.innerWidth / 2);
+      const touchY = e.clientY || (window.innerHeight * 0.6);
+      for (let i = 0; i < 6; i++) heartWaves.push(new HeartWave(touchX, touchY));
       try { navigator.vibrate?.([15, 30, 15]); } catch(err) {}
-
       memEls.quote.textContent = PHRASES[currentQuoteIndex];
       memEls.timer.textContent = `${el.d.textContent}:${el.h.textContent}:${el.m.textContent}`;
       const moodNames = { miss: 'Скучаю', love: 'Люблю', dream: 'Мечтаю', warmth: 'Обнял бы' };
       memEls.mood.textContent = moodNames[activeMood] || 'Люблю';
       memEls.date.textContent = new Date().toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
-
       memOverlay.classList.remove('hidden', 'pointer-events-none');
       requestAnimationFrame(() => {
         memOverlay.classList.remove('opacity-0');
@@ -660,16 +488,12 @@
       memOverlay.querySelector('.glass-panel').classList.add('scale-95');
       setTimeout(() => memOverlay.classList.add('hidden', 'pointer-events-none'), 500);
     }
-
-    /* ===== MOOD MANAGER ===== */
     function setMood(moodKey) {
       if (!MOOD_THEMES[moodKey]) return;
       activeMood = moodKey;
       window.lastMoodChange = Date.now();
-      
       try { navigator.vibrate?.(10); } catch(err) {}
       document.body.setAttribute('data-mood', moodKey);
-
       ['miss', 'love', 'dream', 'warmth'].forEach(k => {
         const targetEl = document.getElementById(`mood-${k}`);
         if (targetEl) {
@@ -682,81 +506,62 @@
           }
         }
       });
-
       const theme = MOOD_THEMES[moodKey];
-      document.documentElement.style.setProperty('--accent-rgb', theme.primary);      document.documentElement.style.setProperty('--accent-secondary-rgb', theme.secondary);
-
+      document.documentElement.style.setProperty('--accent-rgb', theme.primary);
+      document.documentElement.style.setProperty('--accent-secondary-rgb', theme.secondary);
       const orb1 = document.getElementById('glow-orb-1');
       const orb2 = document.getElementById('glow-orb-2');
       if (orb1) orb1.style.background = `rgba(${theme.primary}, ${theme.orbIntensity})`;
       if (orb2) orb2.style.background = `rgba(${theme.secondary}, ${theme.orbIntensity * 0.7})`;
-
-      for(let i=0; i<12; i++) heartWaves.push(new HeartWave(window.innerWidth / 2, window.innerHeight * 0.65));
+      for(let i=0; i<10; i++) heartWaves.push(new HeartWave(window.innerWidth / 2, window.innerHeight * 0.65));
       el.appStatus.textContent = theme.status;
     }
 
-    /* ===== LIVE MOSCOW SKY CYCLE ===== */
     function updateSkyCycle() {
       const now = new Date();
       const mskHour = (now.getUTCHours() + 3) % 24;
       let skyColors = {};
-      
-      if (mskHour >= 5 && mskHour < 9) {
-        skyColors = { orb1: 'rgba(255, 150, 100, 0.14)', orb2: 'rgba(255, 100, 150, 0.10)' };
-      } else if (mskHour >= 9 && mskHour < 17) {
-        skyColors = { orb1: 'rgba(150, 200, 255, 0.10)', orb2: 'rgba(200, 220, 255, 0.08)' };
-      } else if (mskHour >= 17 && mskHour < 21) {
-        skyColors = { orb1: 'rgba(180, 100, 255, 0.12)', orb2: 'rgba(255, 180, 80, 0.10)' };
-      } else {
-        skyColors = { orb1: 'rgba(60, 40, 120, 0.15)', orb2: 'rgba(30, 20, 80, 0.12)' };
-      }
-      
+      if (mskHour >= 5 && mskHour < 9) skyColors = { orb1: 'rgba(255, 150, 100, 0.14)', orb2: 'rgba(255, 100, 150, 0.10)' };
+      else if (mskHour >= 9 && mskHour < 17) skyColors = { orb1: 'rgba(150, 200, 255, 0.10)', orb2: 'rgba(200, 220, 255, 0.08)' };
+      else if (mskHour >= 17 && mskHour < 21) skyColors = { orb1: 'rgba(180, 100, 255, 0.12)', orb2: 'rgba(255, 180, 80, 0.10)' };
+      else skyColors = { orb1: 'rgba(60, 40, 120, 0.15)', orb2: 'rgba(30, 20, 80, 0.12)' };
       if (!window.lastMoodChange || Date.now() - window.lastMoodChange > 30000) {
         document.getElementById('glow-orb-1').style.background = skyColors.orb1;
         document.getElementById('glow-orb-2').style.background = skyColors.orb2;
       }
     }
 
-    /* ===== TIMER LOGIC ===== */
     const formatNumber = (num, digits = 2) => String(num).padStart(digits, '0');
 
     function updateTimeline() {
       try {
         const now = new Date();
         const remainingTime = TARGET_DATE - now;
-
-        const mskTime = new Date(now.getTime() + 3 * 3600000);
-        el.mskClock.textContent = formatNumber(mskTime.getUTCHours()) + ":" + formatNumber(mskTime.getUTCMinutes()) + ":" + formatNumber(mskTime.getUTCSeconds());
-
+        const mskTime = new Date(now.getTime() + 3 * 3600000);        el.mskClock.textContent = formatNumber(mskTime.getUTCHours()) + ":" + formatNumber(mskTime.getUTCMinutes()) + ":" + formatNumber(mskTime.getUTCSeconds());
         if (remainingTime <= 0) {
           el.celebrationOverlay.classList.remove('hidden');
           el.celebrationOverlay.classList.add('flex');
           setCountdownValues(0, 0, 0, 0);
           updateRadialProgressRings(0, 0, 0, 0);
-          el.precisePct.textContent = "100.000000%";          el.progressFill.style.width = "100%";
+          el.precisePct.textContent = "100.000000%";
+          el.progressFill.style.width = "100%";
           return;
         }
-
         const totalSeconds = Math.floor(remainingTime / 1000);
         const days = Math.floor(totalSeconds / 86400);
         const hours = Math.floor((totalSeconds % 86400) / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const minutes = Math.floor((totalSeconds % 3600) / 240);
         const seconds = totalSeconds % 60;
-
         setCountdownValues(days, hours, minutes, seconds);
         updateRadialProgressRings(days, hours, minutes, seconds);
-
         el.statHours.textContent = Math.floor(remainingTime / 3600000).toLocaleString('ru-RU');
         el.statMinutes.textContent = Math.floor(remainingTime / 60000).toLocaleString('ru-RU');
         el.statHearts.textContent = Math.floor(remainingTime / 833).toLocaleString('ru-RU');
-
         const elapsed = now - START_DATE;
         const calculatedPct = Math.min(Math.max((elapsed / TOTAL_SPAN) * 100, 0), 100);
         el.precisePct.textContent = calculatedPct.toFixed(6) + "%";
         el.progressFill.style.width = calculatedPct + "%";
-
         el.daysPassedBadge.textContent = Math.max(0, Math.floor(elapsed / 86400000)).toLocaleString('ru-RU');
-
       } catch (error) {
         console.error("Timeline error:", error);
       }
@@ -781,11 +586,10 @@
       element.style.strokeDashoffset = RING_CIRCUMFERENCE * (1 - Math.min(Math.max(fraction, 0), 1));
     }
 
-    function resetCelebration() {
-      el.celebrationOverlay.classList.add('hidden');      el.celebrationOverlay.classList.remove('flex');
+    function resetCelebration() {      el.celebrationOverlay.classList.add('hidden');
+      el.celebrationOverlay.classList.remove('flex');
     }
 
-    /* ===== QUOTE ROTATOR ===== */
     function displayNextQuote() {
       el.quoteDisplay.classList.remove('opacity-100', 'translate-y-0');
       el.quoteDisplay.classList.add('opacity-0', 'translate-y-2');
@@ -804,24 +608,19 @@
       if (quoteTimer >= quoteInterval) displayNextQuote();
     }
 
-    /* ===== INITIALIZATION ===== */
     function initializeApp() {
       try {
         setTimeout(() => {
           el.loader.classList.add('opacity-0', 'pointer-events-none');
           setTimeout(() => el.loader.remove(), 750);
         }, 800);
-
         setMood('love');
         updateSkyCycle();
         updateTimeline();
-        
         setInterval(updateTimeline, 50);
         setInterval(updateSkyCycle, 60000);
-        
         displayNextQuote();
         setInterval(updateQuoteProgressLine, 50);
-
       } catch (error) {
         console.error("Init error:", error);
         if (el.loader) el.loader.remove();
@@ -831,4 +630,5 @@
     if (document.readyState !== 'loading') initializeApp();
     else document.addEventListener('DOMContentLoaded', initializeApp);
   </script>
-</body></html>
+</body>
+</html>
